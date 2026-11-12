@@ -174,7 +174,7 @@ function Body({ state, me, setMe }: { state: PublicState; me: PlayerState; setMe
           <h2 className="text-2xl font-black">Apuesta registrada</h2>
           <Card className="w-full">
             <div className="text-white/70">Tu respuesta</div>
-            <div className="text-xl font-bold">{answerLabel(me.myAnswer.value, q.unit)}</div>
+            <div className="text-xl font-bold"><AnswerView value={me.myAnswer.value} unit={q.unit} /></div>
             <div className="mt-2 text-white/70">Apostaste</div>
             <div className="text-3xl font-black text-sun">{fmt(me.myAnswer.bet)}</div>
           </Card>
@@ -350,7 +350,7 @@ function AnswerFlow({ q, state, me, onDone }: { q: PublicQuestion; state: Public
         <>
           <Card>
             <div className="text-sm text-white/70">Tu respuesta</div>
-            <div className="text-xl font-bold">{answerLabel(value, q.unit)}</div>
+            <div className="text-xl font-bold"><AnswerView value={value} unit={q.unit} /></div>
             <div className="mt-3 text-sm text-white/70">Tu apuesta</div>
             <div className="text-4xl font-black text-sun">{me.balance > 0 ? fmt(bet) : '0'}</div>
             {bet === me.balance && me.balance > 0 && <div className="mt-1 font-bold text-pink">🔥 ¡ALL-IN!</div>}
@@ -422,11 +422,11 @@ function ResultCard({ state, me }: { state: PublicState; me: PlayerState }) {
       <Card>
         <div className="text-sm text-white/70">Respuesta correcta</div>
         <div className="text-xl font-bold">
-          {reveal ? answerLabel(reveal.correctAnswer, q.unit) : '—'}
+          {reveal ? <AnswerView value={reveal.correctAnswer} unit={q.unit} /> : '—'}
         </div>
         {me.myAnswer && me.myAnswer.questionId === q.id && (
           <div className="mt-2 text-sm text-white/70">
-            Tu respuesta: <span className="font-semibold text-white">{answerLabel(me.myAnswer.value, q.unit)}</span>
+            Tu respuesta: <AnswerView value={me.myAnswer.value} unit={q.unit} small compare={Array.isArray(reveal?.correctAnswer) ? (reveal!.correctAnswer as string[]) : undefined} />
           </div>
         )}
       </Card>
@@ -443,5 +443,21 @@ function ResultCard({ state, me }: { state: PublicState; me: PlayerState }) {
         Vas en el puesto <b className="text-sun">#{me.rank}</b> de {fmt(me.totalPlayers)}
       </div>
     </div>
+  );
+}
+
+/** Muestra una respuesta; en Ranking, como lista numerada (con ✔/✗ si se compara con el orden real). */
+function AnswerView({ value, unit, small, compare }: { value: unknown; unit: string | null; small?: boolean; compare?: string[] }) {
+  if (!Array.isArray(value)) return <span className={small ? 'font-semibold text-white' : ''}>{answerLabel(value, unit)}</span>;
+  return (
+    <ol className={`mt-1 flex flex-col gap-0.5 ${small ? 'text-base font-semibold text-white' : ''}`}>
+      {(value as string[]).map((v, i) => (
+        <li key={v} className="flex gap-2">
+          <span className="w-6 text-sun">{i + 1}.</span>
+          <span className="flex-1">{v}</span>
+          {compare && <span aria-label={compare[i] === v ? 'posición correcta' : 'posición incorrecta'}>{compare[i] === v ? '✔' : '✗'}</span>}
+        </li>
+      ))}
+    </ol>
   );
 }

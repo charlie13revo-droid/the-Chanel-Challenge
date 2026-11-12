@@ -264,7 +264,15 @@ function ControlTab({ hs, act }: { hs: HostState; act: Act }) {
   const left = useCountdown(pub.closesAt, s === 'open');
 
   const nextLabel =
-    s === 'phase_end' ? (hs.hasNextPhase ? 'Siguiente fase' : 'Ver podio final') : hs.isLastQuestionInPhase ? 'Cerrar fase' : 'Siguiente pregunta';
+    s === 'phase_end'
+      ? hs.hasNextPhase
+        ? 'Siguiente fase'
+        : 'Ver podio final'
+      : s === 'revealed' || s === 'leaderboard'
+        ? hs.isLastQuestionInPhase
+          ? 'Cerrar fase'
+          : 'Siguiente pregunta'
+        : 'Siguiente';
 
   const buttons: { label: string; action: string; enabled: boolean; payload?: Record<string, unknown> }[] = [
     { label: '▶ Iniciar fase', action: 'startPhase', enabled: (s === 'lobby' || s === 'phase_end') && hs.hasNextPhase },
