@@ -1,13 +1,19 @@
+# Blueprint de Render: un servicio web Node con disco persistente para la base SQLite.
 services:
   - type: web
     name: channel-challenge
-    runtime: docker
+    runtime: node
     plan: starter
+    region: virginia
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
     healthCheckPath: /api/health
     envVars:
+      - key: NODE_VERSION
+        value: "22"
       - key: DB_FILE
-        value: /data/channel-challenge.db
+        value: /var/data/channel-challenge.db
     disk:
       name: data
-      mountPath: /data
+      mountPath: /var/data
       sizeGB: 1
