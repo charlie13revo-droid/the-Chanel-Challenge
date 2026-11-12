@@ -254,7 +254,7 @@ function AnswerFlow({ q, state, me, onDone }: { q: PublicQuestion; state: Public
   const confirm = async () => {
     setBusy(true);
     setError('');
-    const r = await call<PlayerState>('player:answer', { questionId: q.id, value, bet: me.balance > 0 ? bet : 0 });
+    const r = await call<PlayerState>('player:answer', { questionId: q.id, value, bet: me.balance > 0 ? bet : 0, token: getSession()?.token });
     setBusy(false);
     if (!r.ok) return setError(r.error ?? 'No se pudo registrar.');
     onDone(r.data!);

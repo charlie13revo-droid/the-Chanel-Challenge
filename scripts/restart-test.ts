@@ -79,11 +79,19 @@ async function main() {
   check(players.every((p) => p.state?.state === 'open'), 'La pregunta sigue abierta tras el reinicio');
   check(players.slice(0, 5).every((p) => p.me.myAnswer?.bet === 500), 'Las apuestas hechas antes del reinicio se conservan');
   check(players.every((p) => p.me.balance === 1000), 'Los saldos se conservan');
-  for (let i = 5; i < 10; i++) {
+  for (let i = 5; i < 9; i++) {
     const r = await emit(players[i].s, 'player:answer', { questionId: q.id, value: 10, bet: 100 });
     if (!r.ok) throw new Error(r.error);
   }
   check(true, 'Se aceptan apuestas nuevas después del reinicio');
+  // Conexión nueva que todavía no reanudó la sesión: la apuesta se identifica por el token.
+  const fresh = connect();
+  await new Promise<void>((r) => fresh.once('connect', () => r()));
+  const viaToken = await emit(fresh, 'player:answer', { questionId: q.id, value: 10, bet: 100, token: players[9].token });
+  check(viaToken.ok, 'Una apuesta enviada justo al reconectar se acepta gracias al token');
+  const forged = await emit(connect(), 'player:answer', { questionId: q.id, value: 10, bet: 100, token: 'token-falso' });
+  check(!forged.ok, 'Un token inválido es rechazado');
+  fresh.disconnect();
 
   // Todos respondieron → modo automático cierra y revela.
   const t = Date.now();

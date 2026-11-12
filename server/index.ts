@@ -152,8 +152,16 @@ io.on('connection', (socket: Socket) => {
 
   socket.on(
     'player:answer',
-    safe<{ questionId: number; value: unknown; bet: number }>((body, cb) => {
-      const playerId = socket.data.playerId as string | undefined;
+    safe<{ questionId: number; value: unknown; bet: number; token?: string }>((body, cb) => {
+      let playerId = socket.data.playerId as string | undefined;
+      // Si la conexión se acaba de restablecer y aún no se reanudó la sesión, el token identifica al jugador.
+      if (!playerId && body?.token) {
+        const p = game.resume(String(body.token));
+        if (p) {
+          attachPlayer(p.id, p.room_id);
+          playerId = p.id;
+        }
+      }
       if (!playerId) return cb({ ok: false, error: 'Vuelve a entrar a la sala.' });
       const r = game.submitAnswer(playerId, body);
       cb(r.ok ? { ok: true, data: game.playerState(playerId) } : r);
