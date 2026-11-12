@@ -1,5 +1,25 @@
 # The Channel Challenge
 
+**Publicada en: https://channel-challenge.onrender.com** · Panel del presentador: https://channel-challenge.onrender.com/host
+
+## Guía rápida para el día del evento (una sola persona)
+
+1. **10 minutos antes**, abre https://channel-challenge.onrender.com/host. El plan gratuito de Render se apaga tras 15 minutos sin uso; la primera visita lo despierta (tarda hasta 1 minuto). Mientras el panel o la pantalla estén abiertos, no se vuelve a dormir.
+2. **Crear sala nueva** → elige un PIN de 4–8 dígitos (anótalo).
+3. Pulsa **🖥️ Abrir vista Pantalla** y comparte **esa ventana** en Teams. Ahí está el QR y el código para que la gente entre desde el celular.
+4. Deja el **panel** en otra ventana o en otro monitor. Todo el juego se maneja con **un solo botón: "Siguiente paso"**, o con la **barra espaciadora**, la **flecha →** o un **clicker de presentaciones**.
+5. Con el **Modo automático** (activado por defecto), la pregunta se cierra sola cuando todos los conectados apostaron o se acaba el tiempo, y la respuesta se revela sola. Tú solo avanzas después de explicar cada dato.
+6. Al final: **⬇️ Exportar CSV** con los resultados.
+
+Un ciclo por pregunta = **3 pulsaciones**: abrir pregunta → (se cierra y revela sola) → ver ranking → siguiente.
+Para ensayar sin público: **+ 20 bots** y, después, **↺ Reiniciar partida** (todos vuelven a 1.000 puntos).
+
+**Plan gratuito:** si el servidor se reinicia, la base de datos se borra (las partidas son de un solo evento, así que en la práctica no afecta si no se reinicia durante el juego). Para un evento crítico, cambia el servicio a **Starter** (unos USD 7 al mes) y agrega un disco en `/var/data` con la variable `DB_FILE=/var/data/channel-challenge.db`: con eso los saldos sobreviven a cualquier reinicio.
+
+**Publicar cambios:** el servicio no se actualiza solo con cada push. En Render → *channel-challenge* → **Manual Deploy → Deploy latest commit**.
+
+---
+
 Trivia multijugador en tiempo real con apuestas tipo subasta, para presentaciones virtuales (Teams).
 Antes de cada capítulo del estudio de canales, el público **apuesta** cómo cree que se comporta el shopper; después se **revela la data**.
 
@@ -7,7 +27,7 @@ Antes de cada capítulo del estudio de canales, el público **apuesta** cómo cr
 - **Vista Host** (presentador, con PIN): `/host`.
 - **Vista Pantalla** (16:9, para compartir en Teams): `/screen/CODIGO`.
 
-Probado con **300 jugadores simultáneos** en un juego completo (21 preguntas): latencia de apuesta p50 2 ms / p99 13 ms.
+Probado con **300 jugadores simultáneos** en local y con **100 jugadores en el servidor publicado** (juego completo de 21 preguntas, apuestas confirmadas en ~110 ms por internet). También se probó el reinicio del servidor con una pregunta abierta (nadie pierde saldo ni apuesta) y un juego completo manejado solo con la barra espaciadora.
 
 ---
 
@@ -58,10 +78,14 @@ Pruebas:
 npm test
 ```
 
-Prueba de carga con 300 jugadores (con el servidor corriendo, por ejemplo con `npm start` tras `npm run build`):
+Prueba de carga (respeta `HTTPS_PROXY` si estás detrás de un proxy) y prueba de reinicio del servidor:
 
 ```bash
 npm run load-test -- http://localhost:3001 300
+```
+
+```bash
+npm run restart-test
 ```
 
 ## Producción
