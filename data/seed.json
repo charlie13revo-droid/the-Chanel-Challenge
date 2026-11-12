@@ -1,0 +1,218 @@
+{
+  "game": "The Channel Challenge",
+  "startingPoints": 1000,
+  "source": "Worldpanel by Numerator – \"La fuerza que define a los canales\", Panel Voice (jul. 2026) + datos de panel MAT Mar-26, Total FMCG Colombia.",
+  "benchmark": "Promedio total de canales: ticket $36.959 · frecuencia 14,3 veces/año · 5,3 unidades por acto · 13,6 categorías promedio.",
+  "phases": [
+    {
+      "id": 1,
+      "title": "Si cuesta menos, mejor",
+      "multiplier": 1,
+      "color": "green",
+      "channels": ["D1", "Ísimo", "Ara", "Conveniencia"],
+      "drivers": "Ahorrar-Rendir + Shop Ability",
+      "phrase": "El shopper resuelve sus necesidades cuidando al máximo el presupuesto",
+      "questions": [
+        {
+          "type": "numeric",
+          "prompt": "¿Qué % del gasto en consumo masivo se va a los canales de 'Si cuesta menos, mejor' (D1, Ísimo, Ara, Conveniencia)?",
+          "unit": "%", "min": 0, "max": 60, "step": 1, "answer": 32,
+          "reveal": "32% del gasto FMCG. Es el cuadrante más grande del mercado.",
+          "hostNote": "Ahorrar-Rendir es la fuerza #1 del shopper (32% del valor)."
+        },
+        {
+          "type": "ranking",
+          "prompt": "Ordena de MAYOR a MENOR frecuencia de compra al año",
+          "items": ["D1", "Ara", "Ísimo", "Conveniencia"],
+          "answerOrder": ["D1", "Ara", "Ísimo", "Conveniencia"],
+          "reveal": "D1 46,6 veces · Ara 25,8 · Ísimo 4,5 · Conveniencia 3,3 (Total canales: 14,3).",
+          "hostNote": "D1 se visita más de 3 veces más que el promedio de canales."
+        },
+        {
+          "type": "mito_realidad",
+          "prompt": "En D1, más del 70% del valor que compra el shopper son marcas propias.",
+          "answer": "REALIDAD",
+          "reveal": "73% del valor en D1 es marca propia vs. 20% en el total de canales. Solo 7% es Premium (vs. 23% total).",
+          "hostNote": "La propuesta de D1 es clara: resolver todo al menor precio."
+        },
+        {
+          "type": "numeric",
+          "prompt": "¿Cuál es el precio medio por unidad de OREO dentro de D1? (COP)",
+          "unit": "COP", "min": 500, "max": 3000, "step": 1, "answer": 1182,
+          "reveal": "$1.182 por unidad vs. $1.613 de las galletas dulces en D1. Ritz: $1.828 vs. $2.775 de las galletas saladas.",
+          "hostNote": "Para ganar en D1 hay que ofrecer economía: un mejor precio o un ticket que el hogar perciba como ahorro."
+        },
+        {
+          "type": "intruso",
+          "prompt": "¿Cuál de estos canales es el INTRUSO, es decir, NO pertenece a 'Si cuesta menos, mejor'?",
+          "options": ["D1", "Ara", "Ísimo", "Dollarcity"],
+          "answer": "Dollarcity",
+          "reveal": "Dollarcity pertenece a 'A la vuelta de la esquina'. Bonus: Conveniencia sí está aquí y tiene el NPS más bajo de todos los canales (−23%).",
+          "hostNote": "Conveniencia reemplaza al Discounter cuando no está disponible: compra de antojo, en horarios amplios (index 2,6)."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "En busca de la mejor oportunidad",
+      "multiplier": 1.25,
+      "color": "purple",
+      "channels": ["Olímpica", "Éxito", "Jumbo", "Cadenas Independientes"],
+      "drivers": "Shop Ability + Exploración",
+      "phrase": "Llena el carrito, pero elige el canal por la oportunidad: puntos, promociones y degustaciones",
+      "questions": [
+        {
+          "type": "numeric",
+          "prompt": "¿Qué % del gasto FMCG concentran Olímpica, Éxito, Jumbo y las Cadenas Independientes?",
+          "unit": "%", "min": 0, "max": 60, "step": 1, "answer": 23,
+          "reveal": "23% del gasto FMCG.",
+          "hostNote": "Aquí el shopper elige el canal por la oportunidad, no por el precio."
+        },
+        {
+          "type": "mito_realidad",
+          "prompt": "En Olímpica, la gente compra principalmente porque tiene los precios más bajos.",
+          "answer": "MITO",
+          "reveal": "La motivación #1 es el programa de puntos y descuentos (index 1,6), seguida de los volantes (1,4). De hecho, el principal motivo para ser detractor son los precios altos (37%).",
+          "hostNote": "El 'me dejo guiar por las ofertas' sobreindexa 1,53 en Olímpica."
+        },
+        {
+          "type": "ranking",
+          "prompt": "Ordena de MAYOR a MENOR ticket promedio por compra",
+          "items": ["Olímpica", "Éxito", "Jumbo", "Cadenas Independientes"],
+          "answerOrder": ["Jumbo", "Éxito", "Cadenas Independientes", "Olímpica"],
+          "reveal": "Jumbo $60.980 · Éxito $48.172 · Independientes $47.395 · Olímpica $42.461 (Total: $36.959).",
+          "hostNote": "Jumbo: ticket alto pero solo 4,9 visitas al año. Independientes: 24,4 visitas."
+        },
+        {
+          "type": "numeric",
+          "prompt": "¿Qué % del valor de Olímpica viene de la región Atlántico?",
+          "unit": "%", "min": 0, "max": 100, "step": 1, "answer": 55,
+          "reveal": "55% del valor, con un índice de 370 vs. el total de canales. Su shopper: Consuelo, 58 años, Atlántico, NSE 3.",
+          "hostNote": "Bogotá solo pesa 25% en Olímpica (índice 75)."
+        },
+        {
+          "type": "intruso",
+          "prompt": "¿Cuál NO está en el top 5 de motivaciones de compra de Éxito?",
+          "options": ["Encuentro más que productos de canasta básica", "Encontramos los últimos lanzamientos", "Tiene buen programa de puntos y descuentos", "Ofrece los precios más bajos del mercado"],
+          "answer": "Ofrece los precios más bajos del mercado",
+          "reveal": "Top de Éxito: más que canasta básica (1,5), lanzamientos (1,4), puntos (1,3), seguridad (1,3), degustaciones (1,3). El 81% de sus detractores lo son por precios altos.",
+          "hostNote": "Éxito es un canal de descubrimiento: hay que usarlo para impulsar innovaciones."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Más opciones, más posibilidades",
+      "multiplier": 1.5,
+      "color": "orange",
+      "channels": ["Droguerías de Cadena", "Hiperbodegas", "Carulla"],
+      "drivers": "Confianza + Exploración",
+      "phrase": "Entra por variedad, novedad y experiencia, no por resolver la despensa",
+      "questions": [
+        {
+          "type": "numeric",
+          "prompt": "¿Qué % del gasto FMCG concentran Droguerías de Cadena, Hiperbodegas y Carulla?",
+          "unit": "%", "min": 0, "max": 60, "step": 1, "answer": 6,
+          "reveal": "Solo 6% del gasto: el cuadrante más pequeño, pero el de mayor valor por visita.",
+          "hostNote": "Pocos pesos, pero un shopper que explora y paga más."
+        },
+        {
+          "type": "numeric",
+          "prompt": "¿Cuál es el ticket promedio por compra en Hiperbodegas? (COP)",
+          "unit": "COP", "min": 20000, "max": 150000, "step": 1, "answer": 72635,
+          "reveal": "$72.635: el ticket más alto del mercado, con 8,6 unidades por acto (Total: $36.959 y 5,3 unidades).",
+          "hostNote": "Una salida planeada de alto volumen: básicos en tamaños grandes."
+        },
+        {
+          "type": "mito_realidad",
+          "prompt": "Carulla es un canal donde se hace la compra grande del mes.",
+          "answer": "MITO",
+          "reveal": "Carulla se comporta como un canal de reposición (49% del valor) y de antojo: 'voy a ver qué se me antoja' sobreindexa 1,62. 50% de su valor es Premium.",
+          "hostNote": "Su shopper: Isabel, 60 años, NSE 5-6 (índice 629)."
+        },
+        {
+          "type": "ranking",
+          "prompt": "Ordena de MAYOR a MENOR NPS (recomendación)",
+          "items": ["Carulla", "Hiperbodegas", "Droguerías de Cadena"],
+          "answerOrder": ["Hiperbodegas", "Droguerías de Cadena", "Carulla"],
+          "reveal": "Hiperbodegas 42% (2° puesto) · Droguerías de Cadena 32% (7°) · Carulla 5% (14°). El 84% de los detractores de Carulla lo son por precios altos.",
+          "hostNote": "Hiperbodegas: el precio y la lejanía limitan su alcance, pero fideliza fuerte a quien ya compra."
+        },
+        {
+          "type": "intruso",
+          "prompt": "En 3 de estos canales, Premium es el tier con más peso en valor. ¿Cuál es el intruso?",
+          "options": ["Droguerías de Cadena", "Carulla", "Jumbo", "Hiperbodegas"],
+          "answer": "Hiperbodegas",
+          "reveal": "Premium: Droguerías de Cadena 62%, Carulla 50%, Jumbo 48%. En Hiperbodegas lidera Mainstream (39%) sobre Premium (34%).",
+          "hostNote": "Droguerías de Cadena: domicilio con índice 4,9 (490%), es la motivación #1."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "A la vuelta de la esquina",
+      "multiplier": 2,
+      "color": "blue",
+      "channels": ["Tienda de Barrio", "Minimercados", "Dollarcity", "Droguerías de Barrio"],
+      "drivers": "Confianza + Ahorrar-Rendir",
+      "phrase": "Se compra poco, muchas veces y sin desplazarse",
+      "questions": [
+        {
+          "type": "numeric",
+          "prompt": "¿Qué % del gasto FMCG concentran Tienda de Barrio, Minimercados, Dollarcity y Droguerías de Barrio?",
+          "unit": "%", "min": 0, "max": 60, "step": 1, "answer": 26,
+          "reveal": "26% del gasto FMCG.",
+          "hostNote": "El ticket y la cercanía son lo más importante."
+        },
+        {
+          "type": "numeric",
+          "prompt": "¿Cuántas veces al año compra un hogar en la Tienda de Barrio?",
+          "unit": "veces", "min": 0, "max": 120, "step": 0.1, "answer": 57.2,
+          "reveal": "57,2 veces al año: la frecuencia más alta del mercado, con un ticket de $21.983.",
+          "hostNote": "Su shopper: Rosa, 40 años, Atlántico, NSE 1-2, hogar numeroso."
+        },
+        {
+          "type": "mito_realidad",
+          "prompt": "La gente va a la Tienda de Barrio porque tiene los precios más bajos.",
+          "answer": "MITO",
+          "reveal": "Gana por domicilio (index 2,9) y cercanía (2,4). El precio es el principal motivo de detractor (65%). Y no es compra impulsiva: 'llevo una lista' sobreindexa 1,23.",
+          "hostNote": "La conveniencia económica de la tienda es facilidad de acceso, no precio bajo."
+        },
+        {
+          "type": "ranking",
+          "prompt": "Ordena de MAYOR a MENOR ticket promedio por compra",
+          "items": ["Tienda de Barrio", "Minimercados", "Dollarcity", "Droguerías de Barrio"],
+          "answerOrder": ["Minimercados", "Droguerías de Barrio", "Tienda de Barrio", "Dollarcity"],
+          "reveal": "Minimercados $38.268 · Droguerías de Barrio $28.581 · Tienda $21.983 · Dollarcity $18.106.",
+          "hostNote": "Minimercados resuelve cualquier necesidad, grande o pequeña: 34,9 visitas al año y 6,5 unidades."
+        },
+        {
+          "type": "intruso",
+          "prompt": "En 3 de estos canales, 'ofrece servicio a domicilio' es la motivación #1. ¿Cuál es el intruso?",
+          "options": ["Tienda de Barrio", "Minimercados", "Droguerías de Barrio", "Dollarcity"],
+          "answer": "Dollarcity",
+          "reveal": "Domicilio #1: Droguerías de Barrio 3,6 · Tienda 2,9 · Minimercados 1,7. En Dollarcity la #1 son los productos importados (index 4,2), y es el 3er canal en NPS (40%).",
+          "hostNote": "Dollarcity sirve como canal de prueba para lanzamientos importados y de temporada."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "PREGUNTA DE ORO",
+      "multiplier": 3,
+      "color": "gold",
+      "channels": [],
+      "drivers": "",
+      "phrase": "Una sola pregunta, multiplicador x3. Es el momento de arriesgar.",
+      "questions": [
+        {
+          "type": "numeric",
+          "prompt": "¿Cuántos canales distintos visita en promedio un hogar colombiano al año para su consumo masivo?",
+          "unit": "canales", "min": 1, "max": 20, "step": 0.1, "answer": 9.4,
+          "reveal": "9,4 canales (MAT Jun-26), vs. 8,8 en Jun-23. No existe un canal perfecto: cada uno cumple un rol distinto.",
+          "hostNote": "Cierre: la pregunta no es dónde compra el shopper, sino qué rol le da a cada canal."
+        }
+      ]
+    }
+  ]
+}

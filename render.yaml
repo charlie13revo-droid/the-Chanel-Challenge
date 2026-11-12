@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: channel-challenge
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: DB_FILE
+        value: /data/channel-challenge.db
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1

@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --color-deep: #0B4F5C;
+  --color-deeper: #073943;
+  --color-deepest: #042830;
+  --color-turq: #2EE6C8;
+  --color-pink: #E5195E;
+  --color-sun: #FFD23F;
+  --color-ph-green: #3DDC84;
+  --color-ph-purple: #B983FF;
+  --color-ph-orange: #FF9F43;
+  --color-ph-blue: #5AB0FF;
+  --color-ph-gold: #FFD23F;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--color-deep);
+  background-image: radial-gradient(1200px 700px at 85% -10%, rgba(46, 230, 200, 0.16), transparent 60%),
+    radial-gradient(900px 600px at -10% 110%, rgba(229, 25, 94, 0.14), transparent 60%);
+  background-attachment: fixed;
+  color: #fff;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-sun);
+  outline-offset: 2px;
+}
+
+input[type="range"] {
+  accent-color: var(--color-turq);
+  height: 2.5rem;
+}
+
+/* ---------- Animaciones ---------- */
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.85) translateY(12px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes flip-in {
+  0% { transform: perspective(1200px) rotateY(90deg); opacity: 0; }
+  60% { transform: perspective(1200px) rotateY(-8deg); opacity: 1; }
+  100% { transform: perspective(1200px) rotateY(0deg); }
+}
+@keyframes float-in {
+  0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255, 210, 63, 0.6); }
+  100% { box-shadow: 0 0 0 24px rgba(255, 210, 63, 0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.anim-pop { animation: pop-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.anim-flip { animation: flip-in 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.anim-float { animation: float-in 0.5s ease-out both; }
+.anim-pulse { animation: pulse-ring 1.4s ease-out infinite; }
+.gold-shimmer {
+  background: linear-gradient(90deg, #ffd23f, #fff3b0, #ffd23f, #e8a900, #ffd23f);
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
