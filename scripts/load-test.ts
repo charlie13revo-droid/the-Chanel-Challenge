@@ -1,18 +1,26 @@
 // Prueba de carga y de flujo completo: N jugadores simulados juegan todo el juego contra el servidor real.
 // Uso: npm run load-test -- [url] [jugadores]     (por defecto http://localhost:3001 y 300)
 import { io, Socket } from 'socket.io-client';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import type { Ack, HostState, PlayerState, PublicState } from '../shared/types.ts';
 
 const URL = process.argv[2] ?? 'http://localhost:3001';
 const N = Number(process.argv[3] ?? 300);
 const PIN = '4321';
+// Si hay un proxy corporativo (HTTPS_PROXY), las conexiones salen por él.
+const proxy = process.env.HTTPS_PROXY || process.env.https_proxy;
+const agent = proxy && URL.startsWith('https') ? new HttpsProxyAgent(proxy) : undefined;
+if (agent) {
+  const { setGlobalDispatcher, ProxyAgent } = await import('undici');
+  setGlobalDispatcher(new ProxyAgent(proxy!));
+}
 
 const emit = <T>(s: Socket, ev: string, data?: unknown) =>
   new Promise<Ack<T>>((res) => s.timeout(15000).emit(ev, data, (err: unknown, r: Ack<T>) => res(err ? { ok: false, error: 'timeout' } : r)));
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const connect = () =>
   new Promise<Socket>((res, rej) => {
-    const s = io(URL, { transports: ['websocket'], forceNew: true });
+    const s = io(URL, { transports: process.env.LT_POLLING ? ['polling'] : ['polling', 'websocket'], forceNew: true, agent } as never);
     s.once('connect', () => res(s));
     s.once('connect_error', rej);
   });
@@ -74,6 +82,7 @@ async function main() {
   console.log('✔ Reconexión conserva el saldo');
 
   let questions = 0;
+  let slowestResult = 0;
   while (true) {
     const st = hs.public.state;
     if (st === 'finished') break;
@@ -129,8 +138,10 @@ async function main() {
         await act('lock');
         await act('reveal');
       }
-      await sleep(300);
-      // Todos reciben su resultado personal y el saldo cuadra
+      // Todos reciben su resultado personal (por red puede tardar un poco) y el saldo cuadra
+      const tr = Date.now();
+      while (bots.some((b) => b.me!.myResult?.questionId !== q.id) && Date.now() - tr < 10000) await sleep(100);
+      slowestResult = Math.max(slowestResult, Date.now() - tr);
       for (const b of bots) {
         const r = b.me!.myResult;
         if (!r || r.questionId !== q.id) throw new Error(`Falta resultado para ${b.me!.nickname}`);
@@ -151,6 +162,7 @@ async function main() {
   const lat = bots.flatMap((b) => b.latencies).sort((a, b) => a - b);
   const p = (x: number) => lat[Math.floor(lat.length * x)];
   console.log(`\n✔ Juego completo: ${questions} preguntas, ${N} jugadores`);
+  console.log(`  Resultado personal más lento tras revelar: ${slowestResult} ms`);
   console.log(`  Latencia de apuesta: p50 ${p(0.5)} ms · p95 ${p(0.95)} ms · p99 ${p(0.99)} ms`);
   console.log(`  Podio: ${hs.public.final!.podium.map((e) => `${e.nickname} (${e.balance})`).join(' · ')}`);
 

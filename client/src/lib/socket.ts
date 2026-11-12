@@ -2,7 +2,9 @@ import { io, Socket } from 'socket.io-client';
 import type { Ack } from '../../../shared/types.ts';
 
 export const socket: Socket = io({
-  transports: ['websocket', 'polling'],
+  // Arranca por HTTP (long-polling) y sube a WebSocket si la red lo permite:
+  // funciona también en redes corporativas que bloquean WebSockets.
+  transports: ['polling', 'websocket'],
   reconnection: true,
   reconnectionDelay: 500,
   reconnectionDelayMax: 4000,
