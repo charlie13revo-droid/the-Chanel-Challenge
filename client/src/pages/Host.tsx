@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { HostState } from '../../../shared/types.ts';
 import { AdminEditor } from '../components/AdminEditor.tsx';
 import { Button, Card, ConnectionDot, CountdownRing, ErrorText, Logo, PhaseBadge, ProgressBar, Qr, TypeBadge } from '../components/ui.tsx';
@@ -275,6 +275,27 @@ function ControlTab({ hs, act }: { hs: HostState; act: Act }) {
     { label: `⏭ ${nextLabel}`, action: 'next', enabled: s === 'revealed' || s === 'leaderboard' || (s === 'phase_end' && !hs.hasNextPhase) },
   ];
   const recommended = buttons.findIndex((b) => b.enabled && !(b.action === 'next' && s === 'revealed'));
+  const rec = recommended >= 0 ? buttons[recommended] : null;
+  const lastRun = useRef(0);
+  const runRec = useCallback(() => {
+    // Antirrebote: evita saltarse un paso con doble clic o doble pulsación del clicker.
+    if (!rec || Date.now() - lastRun.current < 700) return;
+    lastRun.current = Date.now();
+    void act(rec.action, rec.payload);
+  }, [rec, act]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName ?? '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      // Espacio, flecha derecha o PageDown (los clickers de presentación envían PageDown / flecha)
+      if (e.code === 'Space' || e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault();
+        runRec();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [runRec]);
 
   const confirmReset = () => {
     if (confirm('¿Reiniciar la partida? Se borran todas las respuestas y todos vuelven a 1.000 puntos.')) void act('resetGame');
@@ -283,6 +304,17 @@ function ControlTab({ hs, act }: { hs: HostState; act: Act }) {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_380px]">
       <div className="flex flex-col gap-4">
+        <button
+          onClick={runRec}
+          disabled={!rec}
+          className="flex min-h-24 w-full flex-wrap items-center justify-between gap-2 rounded-3xl bg-pink px-6 py-4 text-left text-white shadow-xl transition hover:brightness-110 active:scale-[0.99] disabled:bg-white/10 disabled:text-white/50"
+        >
+          <span>
+            <span className="block text-sm font-semibold uppercase tracking-wider opacity-85">Siguiente paso</span>
+            <span className="text-3xl font-black">{rec ? rec.label : s === 'finished' ? 'Juego terminado 🎉' : 'Esperando…'}</span>
+          </span>
+          <span className="rounded-xl bg-black/20 px-3 py-1 text-sm font-semibold">Espacio · → · clicker</span>
+        </button>
         <Card>
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {pub.phase && <PhaseBadge phase={pub.phase} />}
@@ -306,6 +338,20 @@ function ControlTab({ hs, act }: { hs: HostState; act: Act }) {
               </Button>
             ))}
           </div>
+          <label className="mt-4 flex min-h-12 cursor-pointer items-start gap-3 rounded-2xl bg-white/5 p-3 ring-1 ring-white/15">
+            <input
+              type="checkbox"
+              checked={hs.autoReveal}
+              onChange={(e) => act('setAutoReveal', { enabled: e.target.checked })}
+              className="mt-0.5 h-6 w-6 shrink-0 accent-[#2EE6C8]"
+            />
+            <span>
+              <b>Modo automático</b>
+              <span className="block text-sm text-white/70">
+                Cierra la pregunta cuando todos los conectados ya apostaron y revela la respuesta sola al cerrar. Tú solo pasas de pregunta.
+              </span>
+            </span>
+          </label>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2">
               <span className="text-white/80">⏱ Tiempo de la pregunta</span>
@@ -326,7 +372,7 @@ function ControlTab({ hs, act }: { hs: HostState; act: Act }) {
                 min={5}
                 max={600}
                 defaultValue={hs.defaultTime}
-                onBlur={(e) => act('setDefaultTime', { seconds: Number(e.target.value) })}
+                onBlur={(e) => Number(e.target.value) !== hs.defaultTime && act('setDefaultTime', { seconds: Number(e.target.value) })}
                 className="min-h-12 w-20 rounded-xl bg-white/90 px-2 text-deepest"
               />
             </label>

@@ -140,6 +140,7 @@ export interface HostState {
   hasNextPhase: boolean;
   isLastQuestionInPhase: boolean;
   defaultTime: number;
+  autoReveal: boolean;
 }
 
 export interface MyResult {
@@ -175,6 +176,7 @@ export type HostAction =
   | 'removeBots'
   | 'resetGame'
   | 'setDefaultTime'
+  | 'setAutoReveal'
   | 'updateQuestion'
   | 'updatePhase'
   | 'restoreBank';

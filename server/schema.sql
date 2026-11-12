@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS rooms (
   opened_at        INTEGER,
   closes_at        INTEGER,
   default_time     INTEGER NOT NULL DEFAULT 40,
+  auto_reveal      INTEGER NOT NULL DEFAULT 1,       -- 1 = revela solo al cerrar y cierra cuando todos respondieron
   created_at       INTEGER NOT NULL
 );
 

@@ -39,6 +39,7 @@ interface RoomRow {
   opened_at: number | null;
   closes_at: number | null;
   default_time: number;
+  auto_reveal: number;
   created_at: number;
 }
 interface PhaseRow {
@@ -146,6 +147,8 @@ export class Game {
   private leaderboardCache = new Map<string, LeaderEntry[]>();
   private lockTimers = new Map<string, NodeJS.Timeout>();
   private botTimers = new Map<string, NodeJS.Timeout[]>();
+  private revealTimers = new Map<string, NodeJS.Timeout>();
+  private earlyLock = new Set<string>();
   private dirty = new Map<string, 'count' | 'full'>();
   private sockets = new Map<string, Set<string>>(); // playerId -> socket ids
   private flushTimer: NodeJS.Timeout;
@@ -166,6 +169,7 @@ export class Game {
 
   stop() {
     clearInterval(this.flushTimer);
+    for (const t of this.revealTimers.values()) clearTimeout(t);
     for (const t of this.lockTimers.values()) clearTimeout(t);
     for (const ts of this.botTimers.values()) ts.forEach(clearTimeout);
   }
@@ -368,7 +372,26 @@ export class Game {
       )
       .run(room.id, p.id, q.id, JSON.stringify(value), bet, now, Math.max(0, now - (room.opened_at ?? now)));
     this.markDirty(room.id, 'count');
+    this.maybeLockEarly(room, q.id);
     return { ok: true };
+  }
+
+  /** Modo automático: si todos los jugadores conectados ya apostaron, se cierra antes de tiempo. */
+  private maybeLockEarly(room: RoomRow, questionId: number) {
+    if (!room.auto_reveal || this.earlyLock.has(room.id)) return;
+    const { conn } = this.db
+      .prepare('SELECT COUNT(*) AS conn FROM players WHERE room_id = ? AND kicked = 0 AND connected = 1')
+      .get(room.id) as { conn: number };
+    const { n } = this.db
+      .prepare('SELECT COUNT(*) AS n FROM answers a JOIN players p ON p.id = a.player_id WHERE a.question_id = ? AND a.value IS NOT NULL AND p.connected = 1 AND p.kicked = 0')
+      .get(questionId) as { n: number };
+    if (conn === 0 || n < conn) return;
+    this.earlyLock.add(room.id);
+    setTimeout(() => {
+      this.earlyLock.delete(room.id);
+      const r = this.room(room.id);
+      if (r && r.question_state === 'open' && r.opened_at === room.opened_at) this.lock(room.id);
+    }, 1200);
   }
 
   private validateValue(q: QuestionRow, v: unknown): unknown {
@@ -420,7 +443,9 @@ export class Game {
         this.lock(room.id);
         return { ok: true };
       case 'reveal':
+        if (s === 'revealed') return { ok: true }; // ya lo reveló el modo automático
         if (s !== 'locked') return fail('Primero cierra las apuestas.');
+        clearTimeout(this.revealTimers.get(room.id));
         this.reveal(room);
         break;
       case 'leaderboard':
@@ -446,6 +471,9 @@ export class Game {
         break;
       case 'resetGame':
         this.resetGame(room);
+        break;
+      case 'setAutoReveal':
+        this.db.prepare('UPDATE rooms SET auto_reveal = ? WHERE id = ?').run(payload.enabled ? 1 : 0, room.id);
         break;
       case 'setDefaultTime': {
         const t = Math.round(Number(payload.seconds));
@@ -533,6 +561,21 @@ export class Game {
     this.botTimers.delete(roomId);
     this.setState(roomId, { question_state: 'locked' });
     this.broadcast(roomId);
+    const room = this.room(roomId);
+    if (room?.auto_reveal) {
+      clearTimeout(this.revealTimers.get(roomId));
+      this.revealTimers.set(
+        roomId,
+        setTimeout(() => {
+          this.revealTimers.delete(roomId);
+          const r = this.room(roomId);
+          if (r && r.question_state === 'locked' && r.opened_at === room.opened_at) {
+            this.reveal(r);
+            this.broadcast(roomId);
+          }
+        }, 2500),
+      );
+    }
   }
 
   /** Calcula el puntaje de todos los jugadores en el servidor (una sola transacción). */
@@ -648,6 +691,7 @@ export class Game {
 
   private resetGame(room: RoomRow) {
     clearTimeout(this.lockTimers.get(room.id));
+    clearTimeout(this.revealTimers.get(room.id));
     (this.botTimers.get(room.id) ?? []).forEach(clearTimeout);
     this.db.prepare('DELETE FROM answers WHERE room_id = ?').run(room.id);
     this.db
@@ -1011,6 +1055,7 @@ export class Game {
       hasNextPhase: this.nextPhaseId(room) !== null,
       isLastQuestionInPhase: room.current_question + 1 >= phaseQs.length,
       defaultTime: room.default_time,
+      autoReveal: !!room.auto_reveal,
     };
   }
 

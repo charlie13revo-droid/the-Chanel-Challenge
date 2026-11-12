@@ -44,6 +44,9 @@ export function openDb(file = process.env.DB_FILE ?? join(here, '..', 'data', 'c
   const db = new DatabaseSync(file);
   db.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL;');
   db.exec(readFileSync(join(here, 'schema.sql'), 'utf8'));
+  // Migración para bases creadas con una versión anterior.
+  const cols = db.prepare('PRAGMA table_info(rooms)').all() as { name: string }[];
+  if (!cols.some((c) => c.name === 'auto_reveal')) db.exec('ALTER TABLE rooms ADD COLUMN auto_reveal INTEGER NOT NULL DEFAULT 1');
   return db;
 }
 

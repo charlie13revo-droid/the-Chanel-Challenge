@@ -86,7 +86,8 @@ async function main() {
       // 95% responde, con apuestas variadas
       await Promise.all(
         bots.map(async (b, idx) => {
-          if (idx % 20 === 19) return; // 5% no responde
+          const everyone = q.phase === 5; // en la Pregunta de Oro responden todos → cierre y revelación automáticos
+          if (idx % 20 === 19 && !everyone) return; // 5% no responde
           await sleep(Math.random() * 1500);
           const bal = b.me!.balance;
           const min = Math.min(bal, Math.ceil(bal * 0.1));
@@ -113,13 +114,21 @@ async function main() {
       const lazy = bots[19];
       const bad = await emit(lazy.s, 'player:answer', { questionId: q.id, value: q.type === 'ranking' ? q.options : q.type === 'numeric' ? q.min : q.type === 'mito_realidad' ? 'MITO' : q.options[0], bet: 1 });
       if (bad.ok && (lazy.me?.balance ?? 0) > 10) throw new Error('Se aceptó una apuesta menor al 10%');
-      await sleep(1200); // throttle de conteos (1 s)
-      const answered = hs.public.answeredCount;
-      const expected = bots.filter((_, i) => i % 20 !== 19).length;
-      if (answered !== expected) throw new Error(`Conteo de respuestas ${answered} ≠ ${expected}`);
-      await act('lock');
       const before = new Map(bots.map((b) => [b.token, b.me!.balance]));
-      await act('reveal');
+      await sleep(1100); // throttle de conteos (1 s)
+      const answered = hs.public.answeredCount;
+      const expected = q.phase === 5 ? N : bots.filter((_, i) => i % 20 !== 19).length;
+      if (answered !== expected) throw new Error(`Conteo de respuestas ${answered} ≠ ${expected}`);
+      if (q.phase === 5) {
+        // Modo automático: el servidor debe cerrar y revelar sin intervención del host.
+        const t = Date.now();
+        while (hs.public.state !== 'revealed' && Date.now() - t < 10000) await sleep(100);
+        if (hs.public.state !== 'revealed') throw new Error('El modo automático no reveló la pregunta');
+        console.log(`✔ Modo automático: cerró y reveló solo en ${Date.now() - t + 1100} ms tras la última apuesta`);
+      } else {
+        await act('lock');
+        await act('reveal');
+      }
       await sleep(300);
       // Todos reciben su resultado personal y el saldo cuadra
       for (const b of bots) {

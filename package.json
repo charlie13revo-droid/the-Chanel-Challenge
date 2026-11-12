@@ -10,7 +10,8 @@
     "start": "NODE_ENV=production node --disable-warning=ExperimentalWarning --import tsx server/index.ts",
     "test": "node --disable-warning=ExperimentalWarning --import tsx --test tests/*.test.ts",
     "db:sql": "node --disable-warning=ExperimentalWarning --import tsx scripts/export-sql.ts",
-    "load-test": "node --disable-warning=ExperimentalWarning --import tsx scripts/load-test.ts"
+    "load-test": "node --disable-warning=ExperimentalWarning --import tsx scripts/load-test.ts",
+    "restart-test": "node --disable-warning=ExperimentalWarning --import tsx scripts/restart-test.ts"
   },
   "dependencies": {
     "express": "^4.22.3",
