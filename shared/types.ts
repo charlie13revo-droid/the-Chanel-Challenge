@@ -4,6 +4,7 @@ export type QuestionType = 'mito_realidad' | 'intruso' | 'ranking' | 'numeric';
 
 export type QuestionState =
   | 'lobby'
+  | 'howto'
   | 'phase_intro'
   | 'ready'
   | 'open'
@@ -13,7 +14,7 @@ export type QuestionState =
   | 'phase_end'
   | 'finished';
 
-export type PhaseColor = 'green' | 'purple' | 'orange' | 'blue' | 'gold';
+export type PhaseColor = 'teal' | 'green' | 'purple' | 'orange' | 'blue' | 'gold';
 
 export interface PhaseMeta {
   id: number;
@@ -24,6 +25,12 @@ export interface PhaseMeta {
   drivers: string;
   phrase: string;
   questionCount: number;
+  kind: 'intro' | 'chapter' | 'gold';
+  /** "Introducción", "Fase 1"… "Pregunta de Oro" */
+  label: string;
+  timerSeconds: number | null;
+  showLeaderboard: boolean;
+  spendShare: number | null;
 }
 
 /** Pregunta tal como la ve el público (sin respuesta). */
@@ -107,6 +114,8 @@ export interface PublicState {
   question: PublicQuestion | null;
   /** En estado "ready": tipo de la próxima pregunta (el enunciado se oculta hasta abrirla). */
   teaserType: QuestionType | null;
+  /** En estado "howto": diapositiva de la explicación (0…HOWTO_SLIDES−1). */
+  howtoSlide: number | null;
   openedAt: number | null;
   closesAt: number | null;
   serverNow: number;
@@ -165,6 +174,8 @@ export interface PlayerState {
 }
 
 export type HostAction =
+  | 'howto'
+  | 'howtoBack'
   | 'startPhase'
   | 'openQuestion'
   | 'lock'
@@ -193,6 +204,8 @@ export const RESCUE_THRESHOLD = 100;
 export const RESCUE_AMOUNT = 300;
 export const NUMERIC_BONUS = 100;
 export const MAX_NICK = 16;
+/** Diapositivas de "Cómo se juega": general + 4 tipos de pregunta. */
+export const HOWTO_SLIDES = 5;
 
 export function minBet(balance: number): number {
   return Math.min(balance, Math.ceil(balance * MIN_BET_RATIO));

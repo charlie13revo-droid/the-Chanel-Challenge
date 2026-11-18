@@ -82,11 +82,21 @@ async function main() {
   console.log('✔ Reconexión conserva el saldo');
 
   let questions = 0;
+  let sawHowto = false;
   let slowestResult = 0;
   while (true) {
     const st = hs.public.state;
     if (st === 'finished') break;
-    if (st === 'lobby' || (st === 'phase_end' && hs.hasNextPhase)) await act('startPhase');
+    if (st === 'lobby' && !sawHowto) {
+      // Explicación: 5 diapositivas, todos los jugadores deben verla sincronizada.
+      await act('howto');
+      for (let i = 1; i < 5; i++) await act('howto');
+      await sleep(300);
+      if (!bots.every((b) => b.state?.state === 'howto' && b.state.howtoSlide === 4)) throw new Error('Las diapositivas no llegaron a todos');
+      console.log('✔ "Cómo se juega": 5 diapositivas sincronizadas en todos los celulares');
+      sawHowto = true;
+      await act('startPhase');
+    } else if (st === 'lobby' || (st === 'phase_end' && hs.hasNextPhase)) await act('startPhase');
     else if (st === 'phase_end') await act('next');
     else if (st === 'phase_intro' || st === 'ready') {
       await act('openQuestion', { timeLimit: 20 });
@@ -153,8 +163,14 @@ async function main() {
         `F${q.phase}-P${q.order + 1} ${q.type.padEnd(13)} respondieron ${rv.respondents}, acierto ${rv.correctPct}%` +
           (rv.closest ? `, bono → ${rv.closest.nickname}` : ''),
       );
-      await act('leaderboard');
-      if (!hs.public.leaderboard || hs.public.leaderboard.length !== 10) throw new Error('Top 10 vacío');
+      if (hs.public.phase!.showLeaderboard) {
+        await act('leaderboard');
+        if (!hs.public.leaderboard || hs.public.leaderboard.length !== 10) throw new Error('Top 10 vacío');
+      } else {
+        // Fase con el Top 10 desactivado: el servidor debe rechazar el ranking y permitir saltarlo.
+        const r = await emit(host, 'host:action', { action: 'leaderboard' });
+        if (r.ok) throw new Error('Se mostró el Top 10 en una fase donde está desactivado');
+      }
       await act('next');
     } else throw new Error(`Estado inesperado ${st}`);
   }

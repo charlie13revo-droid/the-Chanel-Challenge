@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { FullQuestion, PhaseMeta } from '../../../shared/types.ts';
-import { fmt, TYPE_META } from '../lib/format.ts';
+import { fmt, fmtMultiplier, TYPE_META } from '../lib/format.ts';
 import { call } from '../lib/socket.ts';
 import { Button, Card, ErrorText, PhaseBadge } from './ui.tsx';
 
@@ -63,6 +63,9 @@ function PhaseEditor({ phase, act, onSaved }: { phase: PhaseMeta; act: Act; onSa
   const [phrase, setPhrase] = useState(phase.phrase);
   const [drivers, setDrivers] = useState(phase.drivers);
   const [channels, setChannels] = useState(phase.channels.join(', '));
+  const [timer, setTimer] = useState(phase.timerSeconds === null ? '' : String(phase.timerSeconds));
+  const [spend, setSpend] = useState(phase.spendShare === null ? '' : String(phase.spendShare).replace('.', ','));
+  const [showLb, setShowLb] = useState(phase.showLeaderboard);
   const [msg, setMsg] = useState('');
   const save = async () => {
     const r = await act('updatePhase', {
@@ -72,6 +75,9 @@ function PhaseEditor({ phase, act, onSaved }: { phase: PhaseMeta; act: Act; onSa
       phrase,
       drivers,
       channels: channels.split(',').map((c) => c.trim()),
+      timerSeconds: timer.trim() === '' ? null : Number(timer),
+      spendShare: spend.trim() === '' ? null : Number(spend.replace(',', '.')),
+      showLeaderboard: showLb,
     });
     setMsg(r.ok ? '✔ Guardado' : '');
     if (r.ok) onSaved();
@@ -103,6 +109,18 @@ function PhaseEditor({ phase, act, onSaved }: { phase: PhaseMeta; act: Act; onSa
           Frase del capítulo
           <input className={input} value={phrase} onChange={(e) => setPhrase(e.target.value)} />
         </label>
+        <label className={label}>
+          Tiempo por pregunta en esta fase (segundos)
+          <input className={input} value={timer} onChange={(e) => setTimer(e.target.value)} inputMode="numeric" placeholder="Por defecto de la sala" />
+        </label>
+        <label className={label}>
+          % del gasto FMCG (se muestra en la intro; vacío = no se muestra)
+          <input className={input} value={spend} onChange={(e) => setSpend(e.target.value)} inputMode="decimal" />
+        </label>
+        <label className="flex min-h-11 items-center gap-3 font-semibold md:col-span-2">
+          <input type="checkbox" checked={showLb} onChange={(e) => setShowLb(e.target.checked)} className="h-6 w-6 accent-[#2EE6C8]" />
+          Mostrar Top 10 después de cada pregunta (si no, el ranking solo aparece en el podio de la fase)
+        </label>
       </div>
       <div className="mt-3 flex items-center gap-3">
         <Button onClick={save}>Guardar fase</Button>
@@ -123,7 +141,7 @@ function QuestionEditor({ q, act, onSaved }: { q: Q; act: Act; onSaved: () => vo
   const [step, setStep] = useState(q.step === null ? '' : String(q.step));
   const [reveal, setReveal] = useState(q.reveal);
   const [hostNote, setHostNote] = useState(q.hostNote);
-  const [timeLimit, setTimeLimit] = useState(String(q.timeLimit));
+  const [timeLimit, setTimeLimit] = useState('');
   const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
   const meta = TYPE_META[q.type];
@@ -138,7 +156,7 @@ function QuestionEditor({ q, act, onSaved }: { q: Q; act: Act; onSaved: () => vo
       prompt,
       reveal,
       hostNote,
-      timeLimit: timeLimit === '' ? null : Number(timeLimit),
+      ...(timeLimit.trim() === '' ? {} : { timeLimit: Number(timeLimit) }),
     };
     if (q.type === 'intruso' || q.type === 'ranking') payload.options = lines(options);
     if (q.type === 'ranking') payload.answer = lines(answer);
@@ -240,8 +258,8 @@ function QuestionEditor({ q, act, onSaved }: { q: Q; act: Act; onSaved: () => vo
             <textarea className={input} rows={2} value={hostNote} onChange={(e) => setHostNote(e.target.value)} />
           </label>
           <label className={label}>
-            Tiempo (segundos)
-            <input className={input} value={timeLimit} onChange={(e) => setTimeLimit(e.target.value)} inputMode="numeric" />
+            Tiempo solo para esta pregunta (segundos)
+            <input className={input} value={timeLimit} onChange={(e) => setTimeLimit(e.target.value)} inputMode="numeric" placeholder={`Usa el de la fase (${q.timeLimit} s)`} />
           </label>
           <div className="flex items-end gap-3">
             <Button onClick={save}>Guardar pregunta</Button>
@@ -250,7 +268,7 @@ function QuestionEditor({ q, act, onSaved }: { q: Q; act: Act; onSaved: () => vo
           <div className="md:col-span-2">
             <ErrorText>{err}</ErrorText>
           </div>
-          <p className="text-xs text-white/60 md:col-span-2">Multiplicador efectivo: x{fmt(q.multiplier)}</p>
+          <p className="text-xs text-white/60 md:col-span-2">Multiplicador efectivo: {fmtMultiplier(q.multiplier)}</p>
         </fieldset>
       )}
     </Card>

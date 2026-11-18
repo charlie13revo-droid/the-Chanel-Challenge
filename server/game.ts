@@ -23,6 +23,7 @@ import {
   QuestionType,
   RESCUE_AMOUNT,
   RESCUE_THRESHOLD,
+  HOWTO_SLIDES,
   RevealData,
   STARTING_POINTS,
 } from '../shared/types.ts';
@@ -51,6 +52,9 @@ interface PhaseRow {
   channels: string;
   drivers: string;
   phrase: string;
+  timer_seconds: number | null;
+  show_leaderboard: number;
+  spend_share: number | null;
 }
 interface QuestionRow {
   id: number;
@@ -199,7 +203,7 @@ export class Game {
       .all(roomId, phase) as unknown as QuestionRow[];
   }
   private currentQuestionRow(room: RoomRow): QuestionRow | undefined {
-    if (room.current_phase === 0) return undefined;
+    if (room.current_phase < 0) return undefined;
     return this.db
       .prepare('SELECT * FROM questions WHERE room_id = ? AND phase = ? AND ord = ?')
       .get(room.id, room.current_phase, room.current_question) as unknown as QuestionRow | undefined;
@@ -220,6 +224,11 @@ export class Game {
       drivers: row.drivers,
       phrase: row.phrase,
       questionCount,
+      kind: row.color === 'gold' ? 'gold' : row.phase_id === 0 ? 'intro' : 'chapter',
+      label: row.color === 'gold' ? 'Pregunta de Oro' : row.phase_id === 0 ? 'Introducción' : `Fase ${row.phase_id}`,
+      timerSeconds: row.timer_seconds,
+      showLeaderboard: !!row.show_leaderboard,
+      spendShare: row.spend_share,
     };
   }
   private phasesMeta(roomId: string): PhaseMeta[] {
@@ -239,6 +248,22 @@ export class Game {
     return p?.multiplier ?? 1;
   }
 
+  /** Tiempo de la pregunta: el de la pregunta, si no el de su fase, si no el de la sala. */
+  private effectiveTime(q: QuestionRow, room: RoomRow): number {
+    if (q.time_limit !== null) return q.time_limit;
+    const p = this.db
+      .prepare('SELECT timer_seconds FROM phases WHERE room_id = ? AND phase_id = ?')
+      .get(q.room_id, q.phase) as { timer_seconds: number | null } | undefined;
+    return p?.timer_seconds ?? room.default_time;
+  }
+
+  private phaseShowsLeaderboard(room: RoomRow): boolean {
+    const p = this.db
+      .prepare('SELECT show_leaderboard FROM phases WHERE room_id = ? AND phase_id = ?')
+      .get(room.id, room.current_phase) as { show_leaderboard: number } | undefined;
+    return p ? !!p.show_leaderboard : true;
+  }
+
   private publicQuestion(q: QuestionRow, room: RoomRow): PublicQuestion {
     const options = parse<string[]>(q.options);
     return {
@@ -253,7 +278,7 @@ export class Game {
       min: q.min,
       max: q.max,
       step: q.step,
-      timeLimit: q.time_limit ?? room.default_time,
+      timeLimit: this.effectiveTime(q, room),
       multiplier: this.effectiveMultiplier(q),
     };
   }
@@ -274,7 +299,7 @@ export class Game {
     while (this.roomByCode(code)) code = randomCode();
     const id = crypto.randomUUID();
     this.db
-      .prepare('INSERT INTO rooms (id, code, host_pin_hash, created_at) VALUES (?,?,?,?)')
+      .prepare('INSERT INTO rooms (id, code, host_pin_hash, current_phase, created_at) VALUES (?,?,?,-1,?)')
       .run(id, code, hashPin(pin), Date.now());
     loadBankIntoRoom(this.db, id);
     return { ok: true, data: { code, roomId: id } };
@@ -424,8 +449,22 @@ export class Game {
     const s = room.question_state;
     const fail = (error: string): Ack => ({ ok: false, error });
     switch (action) {
+      case 'howto': {
+        // Explicación de cómo se juega (diapositivas sincronizadas en la pantalla y en los celulares).
+        if (s === 'lobby') this.setState(room.id, { question_state: 'howto', current_question: 0 });
+        else if (s === 'howto') {
+          if (room.current_question + 1 >= HOWTO_SLIDES) return fail('Ya es la última diapositiva. Inicia la fase.');
+          this.setState(room.id, { current_question: room.current_question + 1 });
+        } else return fail('La explicación solo se muestra antes de empezar.');
+        break;
+      }
+      case 'howtoBack':
+        if (s !== 'howto') return fail('No estás en la explicación.');
+        if (room.current_question === 0) this.setState(room.id, { question_state: 'lobby', current_question: 0 });
+        else this.setState(room.id, { current_question: room.current_question - 1 });
+        break;
       case 'startPhase': {
-        if (s !== 'lobby' && s !== 'phase_end') return fail('Solo puedes iniciar una fase desde el lobby o al terminar una fase.');
+        if (s !== 'lobby' && s !== 'howto' && s !== 'phase_end') return fail('Solo puedes iniciar una fase desde el lobby o al terminar una fase.');
         const next = this.nextPhaseId(room);
         if (next === null) return fail('No hay más fases.');
         this.startPhase(room, next);
@@ -450,6 +489,7 @@ export class Game {
         break;
       case 'leaderboard':
         if (s !== 'revealed') return fail('Primero revela la respuesta.');
+        if (!this.phaseShowsLeaderboard(room)) return fail('El Top 10 está desactivado en esta fase (aparece en el podio de la fase).');
         this.showLeaderboard(room);
         break;
       case 'next':
@@ -487,7 +527,7 @@ export class Game {
         return this.withBroadcast(room.id, this.updatePhase(room, payload));
       case 'restoreBank': {
         const n = this.db.prepare('SELECT COUNT(*) AS n FROM answers WHERE room_id = ?').get(room.id) as { n: number };
-        if (n.n > 0 || room.current_phase !== 0) return fail('Reinicia la partida antes de restaurar el banco original.');
+        if (n.n > 0 || room.question_state !== 'lobby') return fail('Reinicia la partida antes de restaurar el banco original.');
         loadBankIntoRoom(this.db, room.id);
         break;
       }
@@ -535,7 +575,7 @@ export class Game {
 
   private openQuestion(room: RoomRow, overrideSeconds?: number) {
     const q = this.currentQuestionRow(room)!;
-    const seconds = overrideSeconds ?? q.time_limit ?? room.default_time;
+    const seconds = overrideSeconds ?? this.effectiveTime(q, room);
     const now = Date.now();
     this.setState(room.id, { question_state: 'open', opened_at: now, closes_at: now + seconds * 1000 });
     this.scheduleLock(this.room(room.id)!);
@@ -701,7 +741,7 @@ export class Game {
       .run(STARTING_POINTS, room.id);
     this.setState(room.id, {
       status: 'lobby',
-      current_phase: 0,
+      current_phase: -1,
       current_question: 0,
       question_state: 'lobby',
       opened_at: null,
@@ -793,17 +833,27 @@ export class Game {
     const title = typeof p.title === 'string' && p.title.trim() ? p.title.trim() : row.title;
     const mult = p.multiplier === undefined ? row.multiplier : Number(p.multiplier);
     if (!Number.isFinite(mult) || mult <= 0 || mult > 10) return { ok: false, error: 'Multiplicador no válido.' };
+    const timer = p.timerSeconds === undefined ? row.timer_seconds : p.timerSeconds === null || p.timerSeconds === '' ? null : Math.round(Number(p.timerSeconds));
+    if (timer !== null && (!Number.isFinite(timer) || timer < 5 || timer > 600)) return { ok: false, error: 'El tiempo debe estar entre 5 y 600 s.' };
+    const spend = p.spendShare === undefined ? row.spend_share : p.spendShare === null || p.spendShare === '' ? null : Number(p.spendShare);
+    if (spend !== null && (!Number.isFinite(spend) || spend < 0 || spend > 100)) return { ok: false, error: 'El % del gasto debe estar entre 0 y 100.' };
+    const showLb = p.showLeaderboard === undefined ? row.show_leaderboard : p.showLeaderboard ? 1 : 0;
     const channels = Array.isArray(p.channels)
       ? JSON.stringify((p.channels as unknown[]).map((x) => String(x).trim()).filter(Boolean))
       : row.channels;
     this.db
-      .prepare('UPDATE phases SET title = ?, multiplier = ?, phrase = ?, drivers = ?, channels = ? WHERE room_id = ? AND phase_id = ?')
+      .prepare(
+        'UPDATE phases SET title = ?, multiplier = ?, phrase = ?, drivers = ?, channels = ?, timer_seconds = ?, spend_share = ?, show_leaderboard = ? WHERE room_id = ? AND phase_id = ?',
+      )
       .run(
         title,
         mult,
         typeof p.phrase === 'string' ? p.phrase.trim() : row.phrase,
         typeof p.drivers === 'string' ? p.drivers.trim() : row.drivers,
         channels,
+        timer,
+        spend,
+        showLb,
         room.id,
         row.phase_id,
       );
@@ -1002,6 +1052,7 @@ export class Game {
       questionIndex: room.current_question,
       question: showQ ? this.publicQuestion(q!, room) : null,
       teaserType: q && s === 'ready' ? q.type : null,
+      howtoSlide: s === 'howto' ? room.current_question : null,
       openedAt: room.opened_at,
       closesAt: room.closes_at,
       serverNow: Date.now(),
@@ -1037,9 +1088,9 @@ export class Game {
       isBot: !!p.is_bot,
       answered: answeredIds.has(p.id),
     }));
-    const phaseQs = room.current_phase ? this.questionRows(room.id, room.current_phase) : [];
+    const phaseQs = room.current_phase >= 0 ? this.questionRows(room.id, room.current_phase) : [];
     let upcoming: QuestionRow | undefined;
-    if (room.question_state === 'lobby' || room.question_state === 'phase_end') {
+    if (room.question_state === 'lobby' || room.question_state === 'howto' || room.question_state === 'phase_end') {
       const np = this.nextPhaseId(room);
       upcoming = np === null ? undefined : this.questionRows(room.id, np)[0];
     } else if (room.question_state === 'revealed' || room.question_state === 'leaderboard') {
@@ -1047,7 +1098,7 @@ export class Game {
     }
     return {
       public: pub,
-      currentQuestion: q && room.question_state !== 'lobby' && room.question_state !== 'phase_end' && room.question_state !== 'finished'
+      currentQuestion: q && !['lobby', 'howto', 'phase_end', 'finished'].includes(room.question_state)
         ? this.fullQuestion(q, room)
         : null,
       nextQuestion: upcoming ? this.fullQuestion(upcoming, room) : null,

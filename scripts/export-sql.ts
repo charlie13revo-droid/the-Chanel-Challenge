@@ -12,11 +12,11 @@ const out: string[] = [
   readFileSync(new URL('../server/schema.sql', import.meta.url), 'utf8'),
   '',
   "-- Sala plantilla con el banco semilla (PIN no utilizable: hash vacío).",
-  "INSERT INTO rooms (id, code, host_pin_hash, created_at) VALUES ('template', 'TMPLT0', 'x:x', 0);",
+  "INSERT INTO rooms (id, code, host_pin_hash, current_phase, created_at) VALUES ('template', 'TMPLT0', 'x:x', -1, 0);",
 ];
 for (const p of seed.phases) {
   out.push(
-    `INSERT INTO phases (room_id, phase_id, title, multiplier, color, channels, drivers, phrase) VALUES ('template', ${p.id}, ${q(p.title)}, ${p.multiplier}, ${q(p.color)}, ${q(JSON.stringify(p.channels))}, ${q(p.drivers)}, ${q(p.phrase)});`,
+    `INSERT INTO phases (room_id, phase_id, title, multiplier, color, channels, drivers, phrase, timer_seconds, show_leaderboard, spend_share) VALUES ('template', ${p.id}, ${q(p.title)}, ${p.multiplier}, ${q(p.color)}, ${q(JSON.stringify(p.channels))}, ${q(p.drivers)}, ${q(p.phrase)}, ${q(p.timerSeconds ?? null)}, ${p.showLeaderboardEachQuestion === false ? 0 : 1}, ${q(p.spendShare ?? null)});`,
   );
   p.questions.forEach((sq, i) => {
     const r = seedQuestionRow(sq);

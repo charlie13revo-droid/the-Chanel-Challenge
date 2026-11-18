@@ -30,6 +30,14 @@ test('ranking: 4 bien = +1,5G; 2 bien = 0; 0–1 bien = −apuesta', () => {
   assert.equal(s(['D', 'C', 'B', 'A']), -200);
 });
 
+test('ranking de 3 ítems: todo bien = +1,5G; menos de la mitad (1 de 3) = −apuesta', () => {
+  const answer = ['A', 'B', 'C'];
+  const s = (value: string[]) => score({ ...base, multiplier: 1.5, type: 'ranking', answer, value }).delta;
+  assert.equal(s(['A', 'B', 'C']), 450);
+  assert.equal(s(['A', 'C', 'B']), -200);
+  assert.equal(s(['C', 'A', 'B']), -200);
+});
+
 test('numérico: ≤5% = +2G; ≤15% = +G; ≤30% = 0; >30% = −apuesta', () => {
   const s = (value: number) => score({ ...base, multiplier: 1, type: 'numeric', answer: 100, value }).delta;
   assert.equal(s(105), 400);

@@ -5,7 +5,9 @@ import { Leaderboard } from '../components/Leaderboard.tsx';
 import { Podium } from '../components/Podium.tsx';
 import { RevealView } from '../components/RevealView.tsx';
 import { CountdownRing, Logo, PhaseBadge, Qr, TypeBadge } from '../components/ui.tsx';
-import { fmt, fmtUnit, PHASE_COLORS, TYPE_META } from '../lib/format.ts';
+import { fmt, fmtMultiplier, fmtUnit, PHASE_COLORS, TYPE_META, typeLabel } from '../lib/format.ts';
+import { HowToSlide, SlideDots } from '../components/HowTo.tsx';
+import { HOWTO_SLIDES } from '../../../shared/types.ts';
 import { syncClock, useCountdown } from '../lib/hooks.ts';
 import { call, socket } from '../lib/socket.ts';
 import { isMuted, setMuted, sfx } from '../lib/sound.ts';
@@ -177,17 +179,33 @@ function ScreenBody({ state, joinUrl }: { state: PublicState; joinUrl: string })
       </div>
     );
 
+  if (s === 'howto' && state.howtoSlide !== null)
+    return (
+      <div className="flex h-full flex-col gap-6">
+        <div key={state.howtoSlide} className="anim-pop min-h-0 flex-1">
+          <HowToSlide slide={state.howtoSlide} phases={state.phases} variant="screen" />
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-2xl text-white/70">
+            Sala <b className="tracking-widest text-sun">{state.code}</b> · {fmt(state.playersCount)} jugadores
+          </span>
+          <SlideDots slide={state.howtoSlide} total={HOWTO_SLIDES} large />
+          <span className="text-2xl text-white/70">Lo mismo lo ves en tu celular</span>
+        </div>
+      </div>
+    );
+
   if (s === 'phase_intro' && state.phase) {
     const p = state.phase;
     const c = PHASE_COLORS[p.color];
-    const gold = p.id === 5;
+    const gold = p.kind === 'gold';
     return (
       <div className="flex h-full flex-col items-center justify-center gap-10 text-center">
         <div className="anim-pop text-4xl font-bold uppercase tracking-[0.3em]" style={{ color: c.hex }}>
-          {gold ? '★ Gran final ★' : `Capítulo ${p.id}`}
+          {gold ? '★ Gran final ★' : p.kind === 'intro' ? 'Introducción' : `Capítulo ${p.id}`}
         </div>
         <h1 className={`anim-pop text-[8.5rem] leading-none font-black ${gold ? 'gold-shimmer' : ''}`} style={{ animationDelay: '0.15s' }}>
-          {gold ? 'Pregunta de Oro' : p.title}
+          {gold ? 'Pregunta de Oro' : p.kind === 'intro' ? p.title.replace(/^Introducción:\s*/, '') : p.title}
         </h1>
         {p.channels.length > 0 && (
           <div className="anim-pop flex flex-wrap justify-center gap-4" style={{ animationDelay: '0.35s' }}>
@@ -196,6 +214,14 @@ function ScreenBody({ state, joinUrl }: { state: PublicState; joinUrl: string })
                 {ch}
               </span>
             ))}
+          </div>
+        )}
+        {p.spendShare !== null && (
+          <div className="anim-pop flex items-baseline gap-4" style={{ animationDelay: '0.45s' }}>
+            <span className="text-[6rem] leading-none font-black tabular-nums" style={{ color: c.hex }}>
+              {fmt(p.spendShare)}%
+            </span>
+            <span className="text-4xl font-bold text-white/85">del gasto FMCG</span>
           </div>
         )}
         {p.drivers && (
@@ -207,7 +233,7 @@ function ScreenBody({ state, joinUrl }: { state: PublicState; joinUrl: string })
           “{p.phrase}”
         </p>
         <div className="anim-pop rounded-full bg-white/10 px-10 py-4 text-4xl font-black ring-2" style={{ animationDelay: '0.8s', boxShadow: `inset 0 0 0 2px ${c.hex}` }}>
-          Multiplicador x{fmt(p.multiplier)} · {p.questionCount} {p.questionCount === 1 ? 'pregunta' : 'preguntas'}
+          Multiplicador {fmtMultiplier(p.multiplier)} · {p.questionCount} {p.questionCount === 1 ? 'pregunta' : 'preguntas'}
         </div>
       </div>
     );
@@ -220,7 +246,7 @@ function ScreenBody({ state, joinUrl }: { state: PublicState; joinUrl: string })
         <div className="anim-pop text-[12rem] leading-none" aria-hidden>
           {t.icon}
         </div>
-        <div className="anim-pop text-8xl font-black">{t.label}</div>
+        <div className="anim-pop text-8xl font-black">{typeLabel(state.teaserType)}</div>
         <div className="text-4xl text-white/80">
           Pregunta {state.questionIndex + 1} de {state.phase?.questionCount} · {t.help}
         </div>
@@ -248,7 +274,7 @@ function ScreenBody({ state, joinUrl }: { state: PublicState; joinUrl: string })
     return (
       <div className="grid h-full grid-cols-[1.35fr_1fr] gap-12">
         <div className="flex flex-col">
-          <h2 className="mb-2 text-6xl font-black">Podio de la {pe.phaseId === 5 ? 'Pregunta de Oro' : `fase ${pe.phaseId}`}</h2>
+          <h2 className="mb-2 text-6xl font-black">Podio · {state.phase?.label ?? `Fase ${pe.phaseId}`}</h2>
           <p className="mb-6 text-2xl text-white/75">Los que más puntos ganaron en este capítulo</p>
           <div className="flex flex-1 items-end">
             <div className="w-full">
@@ -318,7 +344,7 @@ function QuestionScreen({ state }: { state: PublicState }) {
     <div className="flex h-full flex-col">
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <TypeBadge type={q.type} large />
+          <TypeBadge type={q.type} prompt={q.prompt} large />
           <span className="text-3xl text-white/75">
             Pregunta {q.order + 1} de {state.phase?.questionCount}
           </span>

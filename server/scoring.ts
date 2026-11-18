@@ -50,7 +50,7 @@ export function score(input: ScoreInput): ScoreOutput {
       const ans = answer as string[];
       const hits = rankingHits(value as string[], ans);
       if (hits === ans.length) return { delta: win(1.5), isCorrect: true };
-      if (hits >= 2) return { delta: 0, isCorrect: false }; // recupera la apuesta
+      if (hits * 2 >= ans.length) return { delta: 0, isCorrect: false }; // al menos la mitad bien: recupera la apuesta
       return { delta: -bet, isCorrect: false };
     }
     case 'numeric': {

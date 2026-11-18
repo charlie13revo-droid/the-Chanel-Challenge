@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes, ReactNode, useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 import type { PhaseMeta, QuestionType } from '../../../shared/types.ts';
-import { fmtMultiplier, PHASE_COLORS, TYPE_META } from '../lib/format.ts';
+import { fmtMultiplier, PHASE_COLORS, TYPE_META, typeLabel } from '../lib/format.ts';
 
 type Variant = 'primary' | 'pink' | 'ghost' | 'sun' | 'danger';
 const VARIANTS: Record<Variant, string> = {
@@ -43,7 +43,7 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' | 'xl' }) {
 
 export function PhaseBadge({ phase, large = false }: { phase: PhaseMeta; large?: boolean }) {
   const c = PHASE_COLORS[phase.color] ?? PHASE_COLORS.green;
-  const label = phase.id === 5 ? '★ Pregunta de Oro' : `Fase ${phase.id}`;
+  const label = phase.kind === 'gold' ? `★ ${phase.label}` : phase.label;
   return (
     <span
       className={`inline-flex items-center gap-2 rounded-full font-bold ${large ? 'px-6 py-2 text-3xl' : 'px-3 py-1 text-sm'}`}
@@ -54,8 +54,8 @@ export function PhaseBadge({ phase, large = false }: { phase: PhaseMeta; large?:
   );
 }
 
-export function TypeBadge({ type, large = false }: { type: QuestionType; large?: boolean }) {
-  const t = TYPE_META[type];
+export function TypeBadge({ type, large = false, prompt }: { type: QuestionType; large?: boolean; prompt?: string }) {
+  const t = { ...TYPE_META[type], label: typeLabel(type, prompt) };
   return (
     <span
       className={`inline-flex items-center gap-2 rounded-full bg-white/10 font-semibold ring-1 ring-white/20 ${large ? 'px-6 py-2 text-3xl' : 'px-3 py-1 text-sm'}`}

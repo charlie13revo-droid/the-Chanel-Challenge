@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { minBet, PlayerState, PublicQuestion, PublicState } from '../../../shared/types.ts';
+import { HOWTO_SLIDES, minBet, PlayerState, PublicQuestion, PublicState } from '../../../shared/types.ts';
 import { BetPicker, NumericInput, RankingInput } from '../components/PlayerInputs.tsx';
+import { HOWTO_TYPES, HowToSlide, SlideDots } from '../components/HowTo.tsx';
 import { Button, Card, ConnectionDot, CountdownRing, ErrorText, Logo, PhaseBadge, TypeBadge } from '../components/ui.tsx';
-import { answerLabel, fmt, fmtSigned, fmtUnit, PHASE_COLORS, TYPE_META } from '../lib/format.ts';
+import { answerLabel, fmt, fmtMultiplier, fmtSigned, fmtUnit, PHASE_COLORS, TYPE_META } from '../lib/format.ts';
 import { syncClock, useCountdown } from '../lib/hooks.ts';
 import { clearSession, getSession } from '../lib/session.ts';
 import { call, socket } from '../lib/socket.ts';
@@ -132,11 +133,27 @@ function Body({ state, me, setMe }: { state: PublicState; me: PlayerState; setMe
       </Waiting>
     );
 
+  if (s === 'howto' && state.howtoSlide !== null)
+    return (
+      <div className="flex flex-col gap-4">
+        <div key={state.howtoSlide} className="anim-pop">
+          <HowToSlide slide={state.howtoSlide} phases={state.phases} variant="phone" />
+        </div>
+        <SlideDots slide={state.howtoSlide} total={HOWTO_SLIDES} />
+        <p className="text-center text-sm text-white/70">El presentador va pasando las diapositivas. ¡Ya casi empezamos!</p>
+      </div>
+    );
+
   if (s === 'phase_intro' && state.phase)
     return (
       <div className="anim-pop flex flex-col gap-4">
         <PhaseBadge phase={state.phase} />
         <h1 className="text-3xl font-black leading-tight">{state.phase.title}</h1>
+        {state.phase.spendShare !== null && (
+          <div className="text-lg">
+            <b className="text-3xl font-black text-sun">{fmt(state.phase.spendShare)}%</b> del gasto FMCG
+          </div>
+        )}
         {state.phase.channels.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {state.phase.channels.map((c) => (
@@ -152,7 +169,7 @@ function Body({ state, me, setMe }: { state: PublicState; me: PlayerState; setMe
             <b>🛟 ¡Rescate!</b> Tu saldo era menor a 100 y se recargó a 300 puntos para que sigas en el juego.
           </Card>
         )}
-        <p className="text-center text-white/70">Prepárate: en esta fase todo vale x{fmt(state.phase.multiplier)}.</p>
+        <p className="text-center text-white/70">Prepárate: en esta fase todo vale {fmtMultiplier(state.phase.multiplier)}.</p>
       </div>
     );
 
@@ -194,7 +211,7 @@ function Body({ state, me, setMe }: { state: PublicState; me: PlayerState; setMe
 
   if (s === 'phase_end')
     return (
-      <Waiting icon="🏁" title={`Fin de ${state.phase?.id === 5 ? 'la Pregunta de Oro' : `la fase ${state.phase?.id}`}`}>
+      <Waiting icon="🏁" title={`Fin de ${state.phase?.kind === 'gold' ? 'la Pregunta de Oro' : state.phase?.kind === 'intro' ? 'la Introducción' : `la fase ${state.phase?.id}`}`}>
         Vas en el puesto <b>#{me.rank}</b> con <b>{fmt(me.balance)}</b> puntos.
       </Waiting>
     );
@@ -245,6 +262,7 @@ function AnswerFlow({ q, state, me, onDone }: { q: PublicQuestion; state: Public
   const [bet, setBet] = useState(min);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [help, setHelp] = useState(false);
   const left = useCountdown(state.closesAt, true);
 
   const choose = (v: unknown) => {
@@ -264,15 +282,35 @@ function AnswerFlow({ q, state, me, onDone }: { q: PublicQuestion; state: Public
     <div className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
-          <TypeBadge type={q.type} />
+          <TypeBadge type={q.type} prompt={q.prompt} />
           <Steps step={step} />
         </div>
         <CountdownRing left={left} total={q.timeLimit} size={76} />
       </div>
       <h1 className="text-xl font-bold leading-snug">{q.prompt}</h1>
+      <button
+        type="button"
+        onClick={() => setHelp(true)}
+        className="-mt-2 self-start text-sm font-semibold text-turq underline underline-offset-4"
+      >
+        ❓ ¿Cómo respondo?
+      </button>
+      {help && (
+        <div className="fixed inset-0 z-50 overflow-auto bg-deepest px-4 py-6" role="dialog" aria-modal="true" aria-label="Cómo responder">
+          <div className="mx-auto flex max-w-md flex-col gap-4">
+            <HowToSlide slide={HOWTO_TYPES.indexOf(q.type) + 1} phases={state.phases} variant="phone" />
+            <Button onClick={() => setHelp(false)}>Entendido, volver a la pregunta</Button>
+          </div>
+        </div>
+      )}
 
       {step === 1 && (
         <>
+          <p className="text-sm text-white/70">
+            {q.type === 'mito_realidad' && 'Toca MITO o REALIDAD. Después eliges cuánto apostar.'}
+            {q.type === 'intruso' && 'Toca una opción. Después eliges cuánto apostar.'}
+            {q.type === 'numeric' && 'Mueve la barra o escribe el número y toca “Listo”.'}
+          </p>
           {q.type === 'mito_realidad' && (
             <div className="grid grid-cols-2 gap-3">
               {(['MITO', 'REALIDAD'] as const).map((v) => (

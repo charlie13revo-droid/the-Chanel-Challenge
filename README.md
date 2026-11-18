@@ -7,11 +7,14 @@
 1. **10 minutos antes**, abre https://channel-challenge.onrender.com/host. El plan gratuito de Render se apaga tras 15 minutos sin uso; la primera visita lo despierta (tarda hasta 1 minuto). Mientras el panel o la pantalla estén abiertos, no se vuelve a dormir.
 2. **Crear sala nueva** → elige un PIN de 4–8 dígitos (anótalo).
 3. Pulsa **🖥️ Abrir vista Pantalla** y comparte **esa ventana** en Teams. Ahí está el QR y el código para que la gente entre desde el celular.
-4. Deja el **panel** en otra ventana o en otro monitor. Todo el juego se maneja con **un solo botón: "Siguiente paso"**, o con la **barra espaciadora**, la **flecha →** o un **clicker de presentaciones**.
-5. Con el **Modo automático** (activado por defecto), la pregunta se cierra sola cuando todos los conectados apostaron o se acaba el tiempo, y la respuesta se revela sola. Tú solo avanzas después de explicar cada dato.
-6. Al final: **⬇️ Exportar CSV** con los resultados.
+4. Cuando ya hayan entrado, el primer "Siguiente paso" es **📘 Explicar cómo se juega**: 5 diapositivas (los 3 pasos, puntos y multiplicadores, y una por cada tipo de pregunta con un celular de ejemplo). Se ven en la pantalla compartida **y en el celular de cada jugador** al mismo tiempo. Con ◀ o la flecha izquierda vuelves a la anterior; **▶ Iniciar fase** la salta. Durante cada pregunta el jugador también tiene el botón **❓ ¿Cómo respondo?**.
+5. Deja el **panel** en otra ventana o en otro monitor. Todo el juego se maneja con **un solo botón: "Siguiente paso"**, o con la **barra espaciadora**, la **flecha →** o un **clicker de presentaciones**.
+6. Con el **Modo automático** (activado por defecto), la pregunta se cierra sola cuando todos los conectados apostaron o se acaba el tiempo, y la respuesta se revela sola. Tú solo avanzas después de explicar cada dato.
+7. Al final: **⬇️ Exportar CSV** con los resultados.
 
-Un ciclo por pregunta = **3 pulsaciones**: abrir pregunta → (se cierra y revela sola) → ver ranking → siguiente.
+Un ciclo por pregunta = **2 o 3 pulsaciones**: abrir pregunta → (se cierra y revela sola) → ver ranking → siguiente. En la Introducción y en la Pregunta de Oro el Top 10 por pregunta está desactivado, así que se pasa directo a la siguiente (2 pulsaciones).
+
+**Estructura (prompt v2):** Introducción "¿Qué tanto conoces al shopper?" (10 preguntas, 20 s, x1) → 4 capítulos de canales (4 preguntas cada uno, 30 s; x1 · x1,25 · x1,5 · x2; la intro de cada capítulo muestra su % del gasto FMCG) → Pregunta de Oro (40 s, x3). En **📝 Preguntas** puedes cambiar por fase el tiempo, el multiplicador, el % del gasto y si se muestra el Top 10 después de cada pregunta.
 Para ensayar sin público: **+ 20 bots** y, después, **↺ Reiniciar partida** (todos vuelven a 1.000 puntos).
 
 **Plan gratuito:** si el servidor se reinicia, la base de datos se borra (las partidas son de un solo evento, así que en la práctica no afecta si no se reinicia durante el juego). Para un evento crítico, cambia el servicio a **Starter** (unos USD 7 al mes) y agrega un disco en `/var/data` con la variable `DB_FILE=/var/data/channel-challenge.db`: con eso los saldos sobreviven a cualquier reinicio.
@@ -126,7 +129,7 @@ Con 300+ jugadores, una sola instancia de 0,5 vCPU / 512 MB es suficiente. No es
 - Saldo inicial **1.000**. Apuesta mínima **10% del saldo** (redondeado hacia arriba), máxima **ALL-IN**. Validado en el servidor.
 - Multiplicador por fase: x1 · x1,25 · x1,5 · x2 · Pregunta de Oro x3 (editable por fase y, opcionalmente, por pregunta).
 - **Mito/Realidad e Intruso:** acierta +G, falla −apuesta (G = apuesta × multiplicador).
-- **Ranking:** todas bien +1,5×G · 2 bien 0 · 0–1 bien −apuesta. En la fase 3 (3 ítems) solo son posibles 0, 1 o 3 aciertos, así que 1 acierto resta la apuesta.
+- **Ranking (3 o 4 ítems):** todas bien +1,5×G · al menos la mitad bien 0 (recupera) · menos de la mitad −apuesta. Con 3 ítems, 1 acierto es menos de la mitad.
   Los ítems se muestran **barajados** (igual en la pantalla y en todos los celulares) y nunca en el orden correcto. En el banco original, la pregunta de frecuencia de la fase 1 trae los ítems ya en el orden correcto.
 - **Dato correcto:** error = |respuesta − real| / real. ≤5% +2×G · ≤15% +G · ≤30% 0 · >30% −apuesta. **Bono +100** al más cercano de la sala (empate → el más rápido).
 - **Sin respuesta:** pierde la apuesta mínima (10%).

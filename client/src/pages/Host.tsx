@@ -1,8 +1,8 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { HostState } from '../../../shared/types.ts';
+import { HOWTO_SLIDES, HostState } from '../../../shared/types.ts';
 import { AdminEditor } from '../components/AdminEditor.tsx';
 import { Button, Card, ConnectionDot, CountdownRing, ErrorText, Logo, PhaseBadge, ProgressBar, Qr, TypeBadge } from '../components/ui.tsx';
-import { answerLabel, fmt, STATE_LABEL } from '../lib/format.ts';
+import { answerLabel, fmt, fmtMultiplier, STATE_LABEL } from '../lib/format.ts';
 import { syncClock, useCountdown } from '../lib/hooks.ts';
 import { getHostSession, saveHostSession } from '../lib/session.ts';
 import { call, socket } from '../lib/socket.ts';
@@ -274,15 +274,24 @@ function ControlTab({ hs, act }: { hs: HostState; act: Act }) {
           : 'Siguiente pregunta'
         : 'Siguiente';
 
+  const showLb = pub.phase?.showLeaderboard ?? true;
+  const slide = pub.howtoSlide ?? 0;
+  const howtoLast = s === 'howto' && slide >= HOWTO_SLIDES - 1;
   const buttons: { label: string; action: string; enabled: boolean; payload?: Record<string, unknown> }[] = [
-    { label: '▶ Iniciar fase', action: 'startPhase', enabled: (s === 'lobby' || s === 'phase_end') && hs.hasNextPhase },
+    {
+      label: s === 'howto' ? `📘 Siguiente diapositiva (${Math.min(slide + 2, HOWTO_SLIDES)}/${HOWTO_SLIDES})` : '📘 Explicar cómo se juega',
+      action: 'howto',
+      enabled: s === 'lobby' || (s === 'howto' && !howtoLast),
+    },
+    { label: '▶ Iniciar fase', action: 'startPhase', enabled: (s === 'lobby' || s === 'howto' || s === 'phase_end') && hs.hasNextPhase },
     { label: '❓ Abrir pregunta', action: 'openQuestion', enabled: s === 'phase_intro' || s === 'ready', payload: { timeLimit: time } },
     { label: '🔒 Cerrar apuestas', action: 'lock', enabled: s === 'open' },
     { label: '✨ Revelar', action: 'reveal', enabled: s === 'locked' },
-    { label: '🏆 Ver ranking', action: 'leaderboard', enabled: s === 'revealed' },
+    { label: showLb ? '🏆 Ver ranking' : '🏆 Top 10 desactivado en esta fase', action: 'leaderboard', enabled: s === 'revealed' && showLb },
     { label: `⏭ ${nextLabel}`, action: 'next', enabled: s === 'revealed' || s === 'leaderboard' || (s === 'phase_end' && !hs.hasNextPhase) },
   ];
-  const recommended = buttons.findIndex((b) => b.enabled && !(b.action === 'next' && s === 'revealed'));
+  // En "revealed" se recomienda el ranking si la fase lo muestra; si no, se salta directo a la siguiente pregunta.
+  const recommended = buttons.findIndex((b) => b.enabled && !(b.action === 'next' && s === 'revealed' && showLb));
   const rec = recommended >= 0 ? buttons[recommended] : null;
   const lastRun = useRef(0);
   const runRec = useCallback(() => {
@@ -299,11 +308,14 @@ function ControlTab({ hs, act }: { hs: HostState; act: Act }) {
       if (e.code === 'Space' || e.key === 'ArrowRight' || e.key === 'PageDown') {
         e.preventDefault();
         runRec();
+      } else if ((e.key === 'ArrowLeft' || e.key === 'PageUp') && s === 'howto') {
+        e.preventDefault();
+        void act('howtoBack');
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [runRec]);
+  }, [runRec, s, act]);
 
   const confirmReset = () => {
     if (confirm('¿Reiniciar la partida? Se borran todas las respuestas y todos vuelven a 1.000 puntos.')) void act('resetGame');
@@ -326,7 +338,15 @@ function ControlTab({ hs, act }: { hs: HostState; act: Act }) {
         <Card>
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {pub.phase && <PhaseBadge phase={pub.phase} />}
-            {pub.phase && s !== 'lobby' && s !== 'phase_end' && s !== 'finished' && (
+            {s === 'howto' && (
+              <span className="flex items-center gap-2 text-white/80">
+                Diapositiva {slide + 1} de {HOWTO_SLIDES}
+                <button onClick={() => act('howtoBack')} className="min-h-10 rounded-lg bg-white/10 px-3 text-sm font-bold">
+                  ◀ Anterior
+                </button>
+              </span>
+            )}
+            {pub.phase && s !== 'lobby' && s !== 'howto' && s !== 'phase_end' && s !== 'finished' && (
               <span className="text-white/80">
                 Pregunta {pub.questionIndex + 1} de {pub.phase.questionCount}
               </span>
@@ -431,7 +451,7 @@ function ControlTab({ hs, act }: { hs: HostState; act: Act }) {
           </Card>
         )}
 
-        {(s === 'lobby' || s === 'phase_end') && hs.nextQuestion && (
+        {(s === 'lobby' || s === 'howto' || s === 'phase_end') && hs.nextQuestion && (
           <Card>
             <div className="mb-1 text-sm text-white/70">Primera pregunta de la siguiente fase</div>
             <QuestionDetail q={hs.nextQuestion} />
@@ -491,7 +511,7 @@ function QuestionDetail({ q }: { q: NonNullable<HostState['currentQuestion']> })
         <span className="text-sm text-white/70">Respuesta correcta: </span>
         <b>{answerLabel(q.answer, q.unit)}</b>
         <span className="ml-2 text-sm text-white/70">
-          · x{fmt(q.multiplier)} · {q.timeLimit}s
+          · {fmtMultiplier(q.multiplier)} · {q.timeLimit}s
         </span>
       </div>
       <div className="rounded-xl bg-sun/15 p-3 ring-1 ring-sun/60">

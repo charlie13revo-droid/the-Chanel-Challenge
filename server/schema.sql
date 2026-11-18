@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS rooms (
   code             TEXT NOT NULL UNIQUE,
   host_pin_hash    TEXT NOT NULL,
   status           TEXT NOT NULL DEFAULT 'lobby',      -- lobby | playing | finished
-  current_phase    INTEGER NOT NULL DEFAULT 0,         -- 0 = aún no inicia
+  current_phase    INTEGER NOT NULL DEFAULT -1,        -- -1 = aún no inicia (0 = Introducción)
   current_question INTEGER NOT NULL DEFAULT 0,         -- índice dentro de la fase
-  question_state   TEXT NOT NULL DEFAULT 'lobby',      -- lobby | phase_intro | ready | open | locked | revealed | leaderboard | phase_end | finished
+  question_state   TEXT NOT NULL DEFAULT 'lobby',      -- lobby | howto | phase_intro | ready | open | locked | revealed | leaderboard | phase_end | finished
   opened_at        INTEGER,
   closes_at        INTEGER,
   default_time     INTEGER NOT NULL DEFAULT 40,
@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS phases (
   channels   TEXT NOT NULL DEFAULT '[]',               -- JSON
   drivers    TEXT NOT NULL DEFAULT '',
   phrase     TEXT NOT NULL DEFAULT '',
+  timer_seconds    INTEGER,                         -- NULL = usa default_time de la sala
+  show_leaderboard INTEGER NOT NULL DEFAULT 1,      -- Top 10 después de cada pregunta
+  spend_share      REAL,                            -- % del gasto FMCG del capítulo
   PRIMARY KEY (room_id, phase_id)
 );
 

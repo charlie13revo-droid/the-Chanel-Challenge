@@ -27,6 +27,9 @@ export interface SeedPhase {
   channels: string[];
   drivers: string;
   phrase: string;
+  timerSeconds?: number;
+  showLeaderboardEachQuestion?: boolean;
+  spendShare?: number | null;
   questions: SeedQuestion[];
 }
 export interface Seed {
@@ -47,6 +50,12 @@ export function openDb(file = process.env.DB_FILE ?? join(here, '..', 'data', 'c
   // Migración para bases creadas con una versión anterior.
   const cols = db.prepare('PRAGMA table_info(rooms)').all() as { name: string }[];
   if (!cols.some((c) => c.name === 'auto_reveal')) db.exec('ALTER TABLE rooms ADD COLUMN auto_reveal INTEGER NOT NULL DEFAULT 1');
+  const pcols = (db.prepare('PRAGMA table_info(phases)').all() as { name: string }[]).map((c) => c.name);
+  if (!pcols.includes('timer_seconds')) db.exec('ALTER TABLE phases ADD COLUMN timer_seconds INTEGER');
+  if (!pcols.includes('show_leaderboard')) db.exec('ALTER TABLE phases ADD COLUMN show_leaderboard INTEGER NOT NULL DEFAULT 1');
+  if (!pcols.includes('spend_share')) db.exec('ALTER TABLE phases ADD COLUMN spend_share REAL');
+  // Antes, 0 significaba "no ha iniciado"; ahora 0 es la Introducción. Las salas en lobby pasan a -1.
+  db.exec("UPDATE rooms SET current_phase = -1 WHERE question_state = 'lobby'");
   return db;
 }
 
@@ -73,14 +82,15 @@ export function loadBankIntoRoom(db: DatabaseSync, roomId: string) {
   db.prepare('DELETE FROM questions WHERE room_id = ?').run(roomId);
   db.prepare('DELETE FROM phases WHERE room_id = ?').run(roomId);
   const insPhase = db.prepare(
-    'INSERT INTO phases (room_id, phase_id, title, multiplier, color, channels, drivers, phrase) VALUES (?,?,?,?,?,?,?,?)',
+    'INSERT INTO phases (room_id, phase_id, title, multiplier, color, channels, drivers, phrase, timer_seconds, show_leaderboard, spend_share) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
   );
   const insQ = db.prepare(
     `INSERT INTO questions (room_id, phase, ord, type, prompt, options, answer, unit, min, max, step, reveal, host_note)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
   );
   for (const p of seed.phases) {
-    insPhase.run(roomId, p.id, p.title, p.multiplier, p.color, JSON.stringify(p.channels), p.drivers, p.phrase);
+    insPhase.run(roomId, p.id, p.title, p.multiplier, p.color, JSON.stringify(p.channels), p.drivers, p.phrase,
+      p.timerSeconds ?? null, p.showLeaderboardEachQuestion === false ? 0 : 1, p.spendShare ?? null);
     p.questions.forEach((q, i) => {
       const r = seedQuestionRow(q);
       insQ.run(roomId, p.id, i, r.type, r.prompt, r.options, r.answer, r.unit, r.min, r.max, r.step, r.reveal, r.host_note);

@@ -12,7 +12,7 @@ import {
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { QuestionType } from '../../../shared/types.ts';
-import { fmt, fmtUnit } from '../lib/format.ts';
+import { fmt, fmtMultiplier, fmtUnit } from '../lib/format.ts';
 
 // ---------- Ranking: drag & drop + botones ↑↓ ----------
 export function RankingInput({ items, onChange }: { items: string[]; onChange: (v: string[]) => void }) {
@@ -208,7 +208,7 @@ export function BetPicker({
           <div className="text-xl font-black text-white">−{fmt(bet)}</div>
         </div>
       </div>
-      <p className="text-center text-xs text-white/60">Mínimo 10% del saldo ({fmt(min)}) · multiplicador x{fmt(multiplier)}</p>
+      <p className="text-center text-xs text-white/60">Mínimo 10% del saldo ({fmt(min)}) · multiplicador {fmtMultiplier(multiplier)}</p>
     </div>
   );
 }
