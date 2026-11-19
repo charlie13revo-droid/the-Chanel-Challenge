@@ -64,8 +64,11 @@ async function main() {
   await emit(host, 'host:action', { action: 'openQuestion', payload: { timeLimit: 12 } });
   await sleep(300);
   const q = hs.public.question!;
+  // Respuesta correcta e incorrecta según el banco (sirve para cualquier tipo de pregunta de opción).
+  const right = hs.currentQuestion!.answer as string;
+  const wrong = q.type === 'mito_realidad' ? (right === 'MITO' ? 'REALIDAD' : 'MITO') : q.options.find((o) => o !== right)!;
   for (let i = 0; i < 5; i++) {
-    const r = await emit(players[i].s, 'player:answer', { questionId: q.id, value: 'MITO', bet: 500 });
+    const r = await emit(players[i].s, 'player:answer', { questionId: q.id, value: right, bet: 500 });
     if (!r.ok) throw new Error(r.error);
   }
 
@@ -80,16 +83,16 @@ async function main() {
   check(players.slice(0, 5).every((p) => p.me.myAnswer?.bet === 500), 'Las apuestas hechas antes del reinicio se conservan');
   check(players.every((p) => p.me.balance === 1000), 'Los saldos se conservan');
   for (let i = 5; i < 9; i++) {
-    const r = await emit(players[i].s, 'player:answer', { questionId: q.id, value: 'REALIDAD', bet: 100 });
+    const r = await emit(players[i].s, 'player:answer', { questionId: q.id, value: wrong, bet: 100 });
     if (!r.ok) throw new Error(r.error);
   }
   check(true, 'Se aceptan apuestas nuevas después del reinicio');
   // Conexión nueva que todavía no reanudó la sesión: la apuesta se identifica por el token.
   const fresh = connect();
   await new Promise<void>((r) => fresh.once('connect', () => r()));
-  const viaToken = await emit(fresh, 'player:answer', { questionId: q.id, value: 'REALIDAD', bet: 100, token: players[9].token });
+  const viaToken = await emit(fresh, 'player:answer', { questionId: q.id, value: wrong, bet: 100, token: players[9].token });
   check(viaToken.ok, 'Una apuesta enviada justo al reconectar se acepta gracias al token');
-  const forged = await emit(connect(), 'player:answer', { questionId: q.id, value: 'REALIDAD', bet: 100, token: 'token-falso' });
+  const forged = await emit(connect(), 'player:answer', { questionId: q.id, value: wrong, bet: 100, token: 'token-falso' });
   check(!forged.ok, 'Un token inválido es rechazado');
   fresh.disconnect();
 
@@ -98,7 +101,7 @@ async function main() {
   while (players[0].state?.state !== 'revealed' && Date.now() - t < 8000) await sleep(100);
   check(players[0].state?.state === 'revealed', 'Cierre y revelación automáticos funcionan después del reinicio');
   await sleep(300);
-  check(players[0].me.balance === 1000 + 500, 'Puntaje correcto (Mito acertado con apuesta 500 en la Introducción x1 → +500)');
+  check(players[0].me.balance === 1000 + 500, 'Puntaje correcto (respuesta acertada con apuesta 500 en la Introducción x1 → +500)');
   check(players[5].me.balance === 900, 'Puntaje correcto (respuesta equivocada con apuesta 100 → −100)');
 
   // El host recarga la página: vuelve a autenticarse y ve el mismo estado.

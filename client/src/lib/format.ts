@@ -13,6 +13,8 @@ export function fmtSigned(n: number) {
 /** Valor con su unidad: "$1.182", "32%", "57,2 veces". */
 export function fmtUnit(n: number, unit: string | null | undefined) {
   if (unit === 'COP') return `$${fmt(n)}`;
+  // Unidades que empiezan por "$ " (p. ej. "$ de cada $100") se leen "$25 de cada $100".
+  if (unit?.startsWith('$ ')) return `$${fmt(n)} ${unit.slice(2)}`;
   if (unit === '%') return `${fmt(n)}%`;
   return unit ? `${fmt(n)} ${unit}` : fmt(n);
 }

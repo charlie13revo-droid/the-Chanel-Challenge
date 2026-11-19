@@ -118,7 +118,7 @@ export function NumericInput({
       </div>
       <label className="flex items-center gap-3">
         <span className="text-white/80">Valor exacto:</span>
-        {unit === 'COP' && <span className="text-xl font-bold">$</span>}
+        {(unit === 'COP' || unit?.startsWith('$ ')) && <span className="text-xl font-bold">$</span>}
         <input
           inputMode="decimal"
           value={text}
@@ -134,7 +134,7 @@ export function NumericInput({
           className="min-h-12 w-36 flex-1 rounded-xl bg-white px-3 text-xl font-bold text-deepest"
           aria-label={`Valor exacto${unit ? ` en ${unit}` : ''}`}
         />
-        {unit && unit !== 'COP' && <span className="text-xl font-bold">{unit}</span>}
+        {unit && unit !== 'COP' && <span className="text-xl font-bold">{unit.startsWith('$ ') ? unit.slice(2) : unit}</span>}
       </label>
     </div>
   );

@@ -1,7 +1,7 @@
 {
   "game": "The Channel Challenge",
   "startingPoints": 1000,
-  "source": "Worldpanel by Numerator – \"La fuerza que define a los canales\", Panel Voice (jul. 2026) + datos de panel MAT Mar-26, Total FMCG Colombia.",
+  "source": "Worldpanel by Numerator: Panel Voice (jul. 2026) + panel MAT Mar-26 (canales); Consumer Insights Q3-26 Colombia (MAT Sep-26); Omnichannel 2026 Latam y Global.",
   "benchmark": "Promedio total de canales: ticket $36.959 · frecuencia 14,3 veces/año · 5,3 unidades por acto · 13,6 categorías promedio.",
   "phases": [
     {
@@ -17,117 +17,95 @@
       "phrase": "Cuando el shopper visita todos los canales, la gran pregunta es: ¿qué rol le está dando a cada uno?",
       "questions": [
         {
-          "type": "mito_realidad",
-          "prompt": "El shopper colombiano es fiel a un solo canal para hacer su compra de consumo masivo.",
-          "answer": "MITO",
-          "reveal": "El shopper compra en todos los canales. Lo que hay que entender es qué rol le da a cada uno.",
-          "hostNote": "Puente a la slide 9: cuando el shopper visita todos los canales, ¿qué rol le está dando a cada uno?"
-        },
-        {
-          "type": "numeric",
-          "prompt": "¿Cuántas fuerzas mueven la elección de canal del shopper?",
-          "unit": "fuerzas",
-          "min": 1,
-          "max": 10,
-          "answer": 4,
-          "reveal": "4 fuerzas: Ahorrar-Rendir, Confianza, Disponibilidad-Promociones y Portafolio.",
-          "hostNote": "Puente a la slide 12: cada fuerza agrupa los atributos que el shopper valora del canal.",
-          "step": 1
-        },
-        {
           "type": "intruso",
-          "prompt": "¿Cuál de estas NO es una de las fuerzas que busca el shopper?",
+          "prompt": "Cada región del mundo tiene su forma de comprar. ¿Cuál describe mejor a Latinoamérica?",
           "options": [
-            "Ahorrar-Rendir",
-            "Confianza",
-            "Portafolio",
-            "Lealtad a la marca"
+            "Maneja hasta el supermercado grande",
+            "Va al discounter",
+            "Compra por internet",
+            "Camina a la tienda de la esquina"
           ],
-          "answer": "Lealtad a la marca",
-          "reveal": "La cuarta fuerza es Disponibilidad-Promociones: compra eficiente y rápida, horarios amplios y promociones claras.",
-          "hostNote": "Las 4 fuerzas: Ahorrar-Rendir, Confianza, Disponibilidad-Promociones y Portafolio."
-        },
-        {
-          "type": "ranking",
-          "prompt": "Ordena de MAYOR a MENOR las fuerzas según el % del valor que mueven",
-          "items": [
-            "Confianza",
-            "Portafolio",
-            "Ahorrar-Rendir",
-            "Disponibilidad-Promociones"
-          ],
-          "answerOrder": [
-            "Ahorrar-Rendir",
-            "Confianza",
-            "Disponibilidad-Promociones",
-            "Portafolio"
-          ],
-          "reveal": "Ahorrar-Rendir 32% · Confianza 26% · Disponibilidad-Promociones 24% · Portafolio 18% (share valor, MAT Mar-26).",
-          "hostNote": "Ahorro y confianza son la base; disponibilidad y portafolio agregan nuevas oportunidades."
+          "answer": "Camina a la tienda de la esquina",
+          "reveal": "El 37% del valor FMCG en Latam pasa por la tienda tradicional y solo el 24% por súper/hiper. Norteamérica maneja al súper (51%), Europa Occidental va al discounter (26%) y Asia hace clic (31% e-commerce).",
+          "hostNote": "Lánzala en la portada de la intro; se revela en la intro, slide 2."
         },
         {
           "type": "numeric",
-          "prompt": "¿Qué % del valor de consumo masivo mueve la fuerza Portafolio (variedad y descubrimiento)?",
-          "unit": "%",
+          "prompt": "De cada $100 que el hogar gasta en consumo masivo, ¿cuántos se van al Discounter en Colombia?",
+          "unit": "$ de cada $100",
           "min": 0,
           "max": 60,
-          "answer": 18,
-          "reveal": "18% del valor y de las unidades: es la fuerza más pequeña, pero la que abre nuevas oportunidades.",
-          "hostNote": "Portafolio: descubrir productos, marcas y categorías nuevas.",
-          "step": 1
-        },
-        {
-          "type": "intruso",
-          "prompt": "¿Cuál de estos atributos NO pertenece a la fuerza Confianza?",
-          "options": [
-            "Que ofrezca marcas reconocidas",
-            "Que tenga productos frescos y refrigerados",
-            "Que sea un lugar seguro para comprar",
-            "Que ofrezca servicio de entrega a domicilio"
-          ],
-          "answer": "Que ofrezca servicio de entrega a domicilio",
-          "reveal": "El domicilio pertenece a Disponibilidad-Promociones. La Confianza se construye con el buen estado de los productos, la seguridad y la atención.",
-          "hostNote": "Puente a la slide 12: los atributos que componen cada una de las 4 fuerzas."
+          "step": 1,
+          "answer": 25,
+          "reveal": "$25 de cada $100: el 25% del gasto FMCG, casi el mismo share que en Europa Occidental (26%). El otro 75% sigue en los demás canales.",
+          "hostNote": "Lánzala junto con la anterior; se revela en la intro, slide 2 (Colombia se parece a Europa). En la slide 10 se explica cómo llegó el Discounter ahí."
         },
         {
           "type": "mito_realidad",
-          "prompt": "Para el shopper, que el canal esté cerca de su casa no tiene nada que ver con ahorrar.",
+          "prompt": "El shopper es fiel a un solo canal para hacer su mercado.",
           "answer": "MITO",
-          "reveal": "'Está cerca de nuestro hogar o ruta habitual' es un atributo de Ahorrar-Rendir: maximizar el presupuesto combinando precios bajos con cercanía y rapidez.",
-          "hostNote": "Conecta con el capítulo 'A la vuelta de la esquina'."
+          "reveal": "En Latam un hogar compra su consumo masivo en 11,2 canales distintos al año, y el 63% visita 8 o más. ¿El dato de Colombia? Lo revelamos en la Pregunta de Oro.",
+          "hostNote": "Se revela en la intro, slide 3. No reveles el dato de Colombia: es la Pregunta de Oro."
         },
         {
           "type": "intruso",
-          "prompt": "En el mapa de canales, ¿qué fuerza está en el extremo opuesto a Ahorrar-Rendir?",
+          "prompt": "¿Qué país de Latinoamérica crece más en unidades de consumo masivo este año?",
           "options": [
-            "Confianza",
-            "Shop Ability",
-            "Exploración",
-            "Disponibilidad"
+            "Brasil",
+            "México",
+            "Colombia",
+            "Chile"
           ],
-          "answer": "Exploración",
-          "reveal": "Eje horizontal: Ahorrar-Rendir ↔ Exploración. Eje vertical: Confianza ↔ Shop Ability.",
-          "hostNote": "Puente a la slide 14: entrada al plano cartesiano. En el mapa, Portafolio aparece como Exploración y Disponibilidad-Promociones como Shop Ability."
+          "answer": "Colombia",
+          "reveal": "Colombia +3,2% vs +0,7% de Latam. México +1,9%, Brasil +0,1% y Chile −0,7%.",
+          "hostNote": "Se revela en la intro, slide 4."
         },
         {
           "type": "mito_realidad",
-          "prompt": "El rol de un canal lo define una sola fuerza.",
+          "prompt": "Quien empieza a comprar en el Discounter deja de comprar en los demás canales.",
           "answer": "MITO",
-          "reveal": "Cada canal se ubica cruzando dos ejes: su rol es la combinación de dos fuerzas. Así nacen los 4 capítulos.",
-          "hostNote": "Ningún canal vive de una sola fuerza."
+          "reveal": "El 55% de los hogares que compran toallas de cocina en el Discounter también las compran en otros canales (yogur griego: 42%). Fuera del Discounter el valor también crece (+2,0%).",
+          "hostNote": "Se revela en la intro, slide 11."
         },
         {
           "type": "intruso",
-          "prompt": "¿Qué dos fuerzas le dan su rol a D1?",
+          "prompt": "Frente a la góndola, ¿qué mira primero el shopper la mayoría de las veces?",
           "options": [
-            "Ahorrar-Rendir + Shop Ability",
-            "Confianza + Exploración",
-            "Confianza + Ahorrar-Rendir",
-            "Shop Ability + Exploración"
+            "La marca",
+            "El precio",
+            "El tamaño",
+            "El sabor"
           ],
-          "answer": "Ahorrar-Rendir + Shop Ability",
-          "reveal": "D1 está en 'Si cuesta menos, mejor'. Las otras combinaciones son: Confianza + Exploración = Más opciones, más posibilidades; Confianza + Ahorrar-Rendir = A la vuelta de la esquina; Shop Ability + Exploración = En busca de la mejor oportunidad.",
-          "hostNote": "Úsala para presentar los 4 cuadrantes del mapa."
+          "answer": "La marca",
+          "reveal": "Marca 31% de las primeras decisiones, sabor/fragancia 25%, formato 19%, tamaño 11%... y el precio solo 8%.",
+          "hostNote": "Se revela en la intro, slide 14."
+        },
+        {
+          "type": "mito_realidad",
+          "prompt": "En galletas, la marca es clave para decidir la compra.",
+          "answer": "REALIDAD",
+          "reveal": "Realidad: la marca es clave, define el 30% de las decisiones (1 de cada 3), pero no gana sola: el tamaño, el sabor y la variante definen el resto. Galletas es una categoría de 'marca compartida' (como 17 de 22 categorías): marca + surtido correcto en cada canal. Para comparar: en pañales la marca pesa 60% y en jugos, 23%.",
+          "hostNote": "Se revela en la intro, slide 14. Pregunta clave para Mondelez. Dato Latam (metacaso CDH 2023–2026, 13 países)."
+        },
+        {
+          "type": "mito_realidad",
+          "prompt": "Las marcas que más crecen son las que están en más canales.",
+          "answer": "MITO",
+          "reveal": "Las marcas que crecen a doble dígito compran en 2,5 canales en promedio; las que caen a doble dígito, en 2,4. La diferencia es cómo ejecutan, no en cuántos canales están.",
+          "hostNote": "Se revela en la intro, slide 15."
+        },
+        {
+          "type": "intruso",
+          "prompt": "Al elegir dónde hacer el mercado, ¿qué pesa más para el shopper colombiano?",
+          "options": [
+            "Que sea barato y cerca, para rendir la plata",
+            "Que dé confianza: buen estado, seguridad y atención",
+            "Que sea fácil y rápido, con promociones claras",
+            "Que tenga mucha variedad para descubrir"
+          ],
+          "answer": "Que sea barato y cerca, para rendir la plata",
+          "reveal": "Rendir el presupuesto mueve el 32% del valor, la confianza el 26%, la facilidad y las promociones el 24%, y la variedad y el descubrimiento el 18% (MAT Mar-26).",
+          "hostNote": "Reemplaza las preguntas de 'fuerzas'. Lánzala antes de tu slide 'Las necesidades que el shopper busca resolver…' y ahí presentas los nombres de las 4 fuerzas."
         }
       ]
     },
@@ -150,14 +128,14 @@
       "questions": [
         {
           "type": "mito_realidad",
-          "prompt": "En D1 el shopper compra por impulso, sin planear lo que va a llevar.",
+          "prompt": "En D1 la gente compra por impulso, sin planear lo que va a llevar.",
           "answer": "MITO",
-          "reveal": "D1 ocupa el 1er puesto en planeación entre todos los canales: llevar una lista y hacer la compra grande del mes pesan más que en el promedio. Es el canal de la despensa: resolver todo al menor precio.",
-          "hostNote": "Puente a las slides 16 y 17. Su shopper: Claudia, 42 años, Antioquia, NSE 3, hogar de 1 a 2 personas."
+          "reveal": "En D1 la compra es planeada: 'llevo una lista' sobreindexa 1,46 vs el promedio de canales. Es el canal de la despensa: resolver todo al menor precio.",
+          "hostNote": "Puente a 'En este canal las compras no se hacen tanto de forma esporádica…'. Su shopper: Claudia, 42 años, Antioquia, NSE 3, hogar de 1 a 2 personas."
         },
         {
           "type": "ranking",
-          "prompt": "Ordena de MAYOR a MENOR NPS (recomendación)",
+          "prompt": "Ordena de MAYOR a MENOR: ¿qué tanto recomiendan sus compradores a cada canal? (NPS = % de compradores que lo recomendaría menos % que no lo recomendaría)",
           "items": [
             "Conveniencia",
             "Ísimo",
@@ -170,32 +148,34 @@
             "Ísimo",
             "Conveniencia"
           ],
-          "reveal": "D1 46% (1er puesto de todos los canales) · Ara 35% (6°) · Ísimo 9% (13°) · Conveniencia −23% (el NPS más bajo de todos).",
-          "hostNote": "Los cuatro juegan con precio, pero la satisfacción es muy distinta: no basta con ser barato, hay que cumplir el rol. Ísimo se busca por economía pero se usa de forma ocasional (slide 19); Ara suma precio + volantes (slide 20)."
-        },
-        {
-          "type": "numeric",
-          "prompt": "¿Cuál es el precio medio por unidad de OREO dentro de D1? (COP)",
-          "unit": "COP",
-          "min": 500,
-          "max": 3000,
-          "answer": 1182,
-          "reveal": "$1.182 por unidad vs. $1.613 de las galletas dulces en D1. Ritz: $1.828 vs. $2.775 de las galletas saladas.",
-          "hostNote": "Puente a la slide 18: para ganar en D1 hay que ofrecer economía, con un mejor precio o un ticket que el hogar perciba como ahorro.",
-          "step": 1
+          "reveal": "D1 46% (1.er puesto de todos los canales) · Ara 35% (6.°) · Ísimo 9% (13.°) · Conveniencia −23%: hay más gente que no lo recomienda que la que sí (el NPS más bajo de todos).",
+          "hostNote": "Los cuatro juegan con precio, pero la satisfacción es muy distinta: no basta con ser barato, hay que cumplir el rol."
         },
         {
           "type": "intruso",
-          "prompt": "Conveniencia reemplaza al Discounter cuando este no está disponible. ¿Qué motivación sobreindexa MÁS en este canal?",
+          "prompt": "Además del precio y la cercanía, ¿qué hace que la gente elija Ara más que otros canales?",
           "options": [
-            "Que tenga horarios de atención amplios",
-            "Ofrece los precios más bajos del mercado",
-            "Que tenga volantes o revistas de promociones",
-            "Que tenga gran variedad de marcas"
+            "Los volantes y revistas con las promociones",
+            "Las degustaciones",
+            "Que lleva a domicilio",
+            "Los productos importados"
           ],
-          "answer": "Que tenga horarios de atención amplios",
-          "reveal": "Horarios amplios: index 260%. Le sigue 'es fácil encontrar promociones destacadas en exhibición' (140%). Es la compra económica e impulsiva para una necesidad puntual.",
-          "hostNote": "Puente a la slide 21: activar descuentos en galletas y chocolates de 10 pm a 7 am, cuando los Discounters (8 am a 9 pm) están cerrados, y complementar con publicidad el día anterior."
+          "answer": "Los volantes y revistas con las promociones",
+          "reveal": "Los volantes y revistas con promociones sobreindexan 1,5 vs el promedio de canales, igual que la cercanía. Lideran los precios bajos y rendir el presupuesto (1,7). El 79% de sus compradores está satisfecho.",
+          "hostNote": "Puente a 'Ara domina: precio bajo y cercanía son su propuesta ganadora; aquí la búsqueda de volantes con promociones gana peso'."
+        },
+        {
+          "type": "intruso",
+          "prompt": "¿Por qué elige la gente una tienda de Conveniencia?",
+          "options": [
+            "Porque abre hasta tarde",
+            "Porque tiene los precios más bajos",
+            "Por los volantes de promociones",
+            "Por la variedad de marcas"
+          ],
+          "answer": "Porque abre hasta tarde",
+          "reveal": "Los horarios amplios sobreindexan 2,6 veces vs el promedio. Le sigue encontrar promociones destacadas en exhibición (1,4). Es la compra económica e impulsiva para una necesidad puntual.",
+          "hostNote": "Puente a la propuesta: descuentos en galletas y chocolates de 10 pm a 7 am, cuando los Discounters (8 am a 9 pm) están cerrados."
         }
       ]
     },
@@ -221,40 +201,40 @@
           "prompt": "En Olímpica, la gente compra principalmente porque tiene los precios más bajos.",
           "answer": "MITO",
           "reveal": "La motivación #1 es el programa de puntos y descuentos (index 1,6), seguida de los volantes (1,4). De hecho, el principal motivo para ser detractor son los precios altos (37%).",
-          "hostNote": "Puente a la slide 24: hacer de los puntos un acelerador, con comunicación clara, y ganar visibilidad en los volantes. 'Me dejo guiar por las ofertas' sobreindexa 1,53."
+          "hostNote": "Puente a 'Aprovechar el rol Olímpica…': hacer de los puntos un acelerador y ganar visibilidad en los volantes."
         },
         {
           "type": "intruso",
-          "prompt": "¿Cuál NO está en el top 5 de motivaciones de compra de Éxito?",
+          "prompt": "¿Qué atrae a la gente a Éxito más que a otros canales?",
           "options": [
-            "Encuentro más que productos de canasta básica",
-            "Encontramos los últimos lanzamientos",
-            "Tiene buen programa de puntos y descuentos",
-            "Ofrece los precios más bajos del mercado"
+            "Que encuentra más que mercado: ropa, electrodomésticos, hogar",
+            "Que tiene los precios más bajos",
+            "Que queda cerca de la casa",
+            "Que abre hasta tarde"
           ],
-          "answer": "Ofrece los precios más bajos del mercado",
-          "reveal": "Top de Éxito: más que canasta básica (1,5), lanzamientos (1,4), puntos (1,3), seguridad (1,3), degustaciones (1,3). El 81% de sus detractores lo son por precios altos.",
-          "hostNote": "Puente a la slide 25: Éxito es un canal de descubrimiento. Ahí deben vivir las innovaciones, los nuevos sabores y las ediciones especiales."
+          "answer": "Que encuentra más que mercado: ropa, electrodomésticos, hogar",
+          "reveal": "Encontrar más que canasta básica sobreindexa 1,5; le siguen los últimos lanzamientos (1,4). El 81% de sus detractores lo son por precios altos.",
+          "hostNote": "Puente a 'Aprovechar el rol del Éxito…': ahí deben vivir las innovaciones, nuevos sabores y ediciones especiales."
         },
         {
           "type": "intruso",
-          "prompt": "¿Qué palanca hace que el shopper explore en Jumbo?",
+          "prompt": "¿Qué hace que el shopper se antoje y pruebe cosas nuevas en Jumbo?",
           "options": [
-            "Ofrece degustaciones o prueba de productos",
-            "Ofrece los precios más bajos del mercado",
-            "Que tenga horarios de atención amplios",
-            "Está cerca de nuestro hogar o ruta habitual"
+            "Las degustaciones",
+            "Los precios más bajos",
+            "Los horarios amplios",
+            "Que queda cerca de la casa"
           ],
-          "answer": "Ofrece degustaciones o prueba de productos",
-          "reveal": "Degustaciones: index 138%. Y el 33% de sus compradores 'nunca lleva algo en mente: va a revisar qué se le antoja'.",
-          "hostNote": "Puente a la slide 26: degustaciones en momentos de alto tráfico que refuercen recetas y momentos de consumo (Oreo con helado, cheesecake de Oreo, Ritz con toppings)."
+          "answer": "Las degustaciones",
+          "reveal": "Degustaciones: index 1,38. Y el 33% de sus compradores 'nunca lleva algo en mente: va a revisar qué se le antoja'.",
+          "hostNote": "Puente a 'Aprovechar el rol de Jumbo…': degustaciones en momentos de alto tráfico (Oreo con helado, cheesecake de Oreo, Ritz con toppings)."
         },
         {
           "type": "mito_realidad",
-          "prompt": "Las Cadenas Independientes son el canal con más variedad de formatos de galletas.",
+          "prompt": "Las cadenas regionales (Independientes) son el canal donde más formatos de galletas se encuentran.",
           "answer": "MITO",
-          "reveal": "El shopper sí busca aquí variedad de empaques y tamaños (index 140%), pero Independientes es apenas el 4° canal con más formatos de galletas. Ahí hay una oportunidad.",
-          "hostNote": "Puente a la slide 27: adaptar formatos y sabores al ticket y asegurar una propuesta completa en la góndola de lonchera grande."
+          "reveal": "El shopper sí busca ahí variedad de empaques y tamaños (index 1,4), pero Independientes es apenas el 4.° canal en formatos de galletas (lidera Discounters). Ahí hay una oportunidad.",
+          "hostNote": "Puente a 'Aprovechar el rol de los independientes…': adaptar formatos y sabores al ticket."
         }
       ]
     },
@@ -276,31 +256,33 @@
       "questions": [
         {
           "type": "intruso",
-          "prompt": "En Droguerías de Cadena hay una motivación que sobreindexa 490%. ¿Cuál es?",
+          "prompt": "¿Qué es lo que más pesa al elegir una droguería de cadena?",
           "options": [
-            "Ofrece servicio de entrega a domicilio",
-            "Ofrece los precios más bajos del mercado",
-            "Que tenga parqueadero",
-            "Que tenga gran cantidad de productos importados"
+            "Que lleva los pedidos a domicilio",
+            "Que tiene los precios más bajos",
+            "Que tiene parqueadero",
+            "Que tiene productos importados"
           ],
-          "answer": "Ofrece servicio de entrega a domicilio",
-          "reveal": "Domicilio: index 490%, la motivación #1. Y el 50% de sus compradores va por un producto específico.",
-          "hostNote": "Puente a la slide 30: mostrar que nuestras marcas están en el canal, en la app y en la sección 'No olvides llevar' (ya estamos impulsando OREO en la app)."
+          "answer": "Que lleva los pedidos a domicilio",
+          "reveal": "El domicilio sobreindexa 4,9 veces: la motivación #1. Y el 50% de sus compradores va por un producto específico.",
+          "hostNote": "Puente a 'Impulsar las marcas por medio del domicilio…': sección 'No olvides llevar' en la app (ya estamos impulsando OREO)."
         },
         {
-          "type": "numeric",
-          "prompt": "¿Cuál es el ticket promedio por compra en Hiperbodegas? (COP)",
-          "unit": "COP",
-          "min": 20000,
-          "max": 150000,
-          "answer": 72635,
-          "reveal": "$72.635: el ticket más alto del mercado, con 8,6 unidades por acto (Total: $36.959 y 5,3 unidades).",
-          "hostNote": "Puente a la slide 29: una salida planeada de alto volumen, con básicos en tamaños grandes.",
-          "step": 1
+          "type": "intruso",
+          "prompt": "¿En qué canal se gasta más plata en cada compra?",
+          "options": [
+            "Hiperbodegas",
+            "Tienda de barrio",
+            "D1",
+            "Droguería de cadena"
+          ],
+          "answer": "Hiperbodegas",
+          "reveal": "Hiperbodegas: $72.635 por compra y 8,6 unidades, el ticket más alto del mercado. Droguería de cadena $46.756, D1 $32.895, tienda de barrio $21.983.",
+          "hostNote": "Puente a la ficha de Hiperbodegas: salida planeada de alto volumen, con básicos en tamaños grandes."
         },
         {
           "type": "ranking",
-          "prompt": "Ordena de MAYOR a MENOR NPS (recomendación)",
+          "prompt": "Ordena de MAYOR a MENOR: ¿qué tanto recomiendan sus compradores a cada canal? (NPS = % de compradores que lo recomendaría menos % que no lo recomendaría)",
           "items": [
             "Carulla",
             "Hiperbodegas",
@@ -311,15 +293,15 @@
             "Droguerías de Cadena",
             "Carulla"
           ],
-          "reveal": "Hiperbodegas 42% (2° puesto) · Droguerías de Cadena 32% (7°) · Carulla 5% (14°). El 84% de los detractores de Carulla lo son por precios altos.",
-          "hostNote": "Puente a la slide 31: el precio y la lejanía limitan el alcance de Hiperbodegas, pero fideliza fuerte a quien ya compra."
+          "reveal": "Hiperbodegas 42% (2.° puesto) · Droguerías de Cadena 32% (7.°) · Carulla 5% (14.°). El 84% de los detractores de Carulla lo son por precios altos.",
+          "hostNote": "El precio y la lejanía limitan el alcance de Hiperbodegas, pero fideliza fuerte a quien ya compra."
         },
         {
           "type": "mito_realidad",
           "prompt": "Carulla es un canal donde se hace la compra grande del mes.",
           "answer": "MITO",
-          "reveal": "Carulla se comporta como un canal de reposición (49% del valor) y de antojo: 'voy a ver qué se me antoja' sobreindexa 1,62. 50% de su valor es Premium.",
-          "hostNote": "Puente a la slide 32: exhibiciones de ocasión fuera de góndola, en línea con 'Pequeños placeres, grandes momentos'. Su shopper: Isabel, 60 años, NSE 5-6 (índice 629)."
+          "reveal": "Carulla es de reposición y antojo: 'compro lo que se me antoja en el momento' sobreindexa 1,62. Su fuerte: limpieza, frescura e importados.",
+          "hostNote": "Puente a 'Aprovechar el rol de Carulla como canal experiencial…'. Su shopper: Isabel, 60 años, NSE 5-6."
         }
       ]
     },
@@ -341,48 +323,50 @@
       "phrase": "Se compra poco, muchas veces y sin desplazarse",
       "questions": [
         {
-          "type": "numeric",
-          "prompt": "¿Cuántas veces al año compra un hogar en la Tienda de Barrio?",
-          "unit": "veces",
-          "min": 0,
-          "max": 120,
-          "answer": 57.2,
-          "reveal": "57,2 veces al año: la frecuencia más alta del mercado, con un ticket de $21.983.",
-          "hostNote": "Puente a la slide 34. Su shopper: Rosa, 40 años, Atlántico, NSE 1-2, hogar numeroso.",
-          "step": 0.1
+          "type": "intruso",
+          "prompt": "¿Cada cuánto va un hogar a la tienda de barrio?",
+          "options": [
+            "Una vez al mes",
+            "Cada 15 días",
+            "Más de una vez por semana",
+            "Todos los días"
+          ],
+          "answer": "Más de una vez por semana",
+          "reveal": "57,2 veces al año (más de una vez por semana): la frecuencia más alta del mercado, con un ticket de $21.983.",
+          "hostNote": "Su shopper: Rosa, 40 años, Atlántico, NSE 1-2, hogar numeroso."
         },
         {
           "type": "mito_realidad",
-          "prompt": "La gente va a la Tienda de Barrio porque tiene los precios más bajos.",
+          "prompt": "La gente va a la tienda de barrio porque tiene los precios más bajos.",
           "answer": "MITO",
-          "reveal": "Gana por domicilio (index 2,9) y cercanía (2,4). El precio es el principal motivo de detractor (65%). Y no es compra impulsiva: 'llevo una lista' sobreindexa 1,23.",
-          "hostNote": "Puente a la slide 35: la conveniencia de la tienda es la facilidad de acceso, no el precio bajo. Usar la cercanía para impulsar la recomendación del tendero, con un plan de puntos."
+          "reveal": "Gana por domicilio (index 2,9) y cercanía (2,4). El precio es el principal motivo para ser detractor (65%). Y no es compra impulsiva: 'llevo una lista' sobreindexa 1,21.",
+          "hostNote": "Puente a 'Tiendas de barrio es un canal motivado por la cercanía y la recomendación del tendero'."
         },
         {
           "type": "intruso",
-          "prompt": "En 3 de estos canales, 'ofrece servicio a domicilio' es la motivación #1. ¿Cuál es el intruso?",
+          "prompt": "¿Por qué va la gente a Dollarcity?",
           "options": [
-            "Tienda de Barrio",
-            "Minimercados",
-            "Droguerías de Barrio",
-            "Dollarcity"
+            "Por los productos importados",
+            "Porque lleva a domicilio",
+            "Porque el vendedor le recomienda",
+            "Porque tiene los precios más bajos"
           ],
-          "answer": "Dollarcity",
-          "reveal": "Domicilio #1: Droguerías de Barrio 3,6 · Tienda 2,9 · Minimercados 1,7. En Dollarcity la #1 son los productos importados (index 4,2), y es el 3er canal en NPS (40%).",
-          "hostNote": "Puente a la slide 37: Dollarcity sirve como canal de prueba para lanzamientos importados y de temporada (Oreo Red Velvet, S'Moreo, calendario de Adviento)."
+          "answer": "Por los productos importados",
+          "reveal": "Productos importados: index 4,2. Además es el 3.er canal en recomendación (NPS 40%).",
+          "hostNote": "Puente a la propuesta: canal de prueba para lanzamientos importados y de temporada (Oreo Red Velvet, S'Moreo, calendario de Adviento)."
         },
         {
           "type": "intruso",
-          "prompt": "En Droguerías de Barrio, ¿dónde tiene más sentido impulsar nuestras marcas?",
+          "prompt": "En la droguería de barrio la gente compra poquito (unas 2 cosas por visita). ¿Dónde tiene más sentido poner nuestras galletas?",
           "options": [
-            "En el punto de pago, con ristras de productos individuales",
-            "Con degustaciones en momentos de alto tráfico",
-            "Con volantes y revistas de promociones",
+            "En la caja, con ristras de producto individual",
+            "Con degustaciones",
+            "En volantes de promociones",
             "En la góndola de lonchera grande"
           ],
-          "answer": "En el punto de pago, con ristras de productos individuales",
-          "reveal": "Es un canal de confianza y cercanía: 'hay alguien dispuesto a ayudar' sobreindexa 240% y el domicilio 360%. La compra es corta (2,3 unidades por acto), así que el momento clave es el punto de pago.",
-          "hostNote": "Puente a la slide 38."
+          "answer": "En la caja, con ristras de producto individual",
+          "reveal": "Es un canal de confianza y cercanía: 'hay alguien dispuesto a ayudar' sobreindexa 1,9 y el domicilio 3,6. Con 2,3 unidades por compra, el momento clave es el punto de pago.",
+          "hostNote": "Puente a 'Aunque es un canal impulsado por categorías enfocadas en la salud…'."
         }
       ]
     },
@@ -400,14 +384,14 @@
       "questions": [
         {
           "type": "numeric",
-          "prompt": "¿Cuántos canales distintos visita en promedio un hogar colombiano al año para su consumo masivo?",
+          "prompt": "¿En cuántos canales distintos compra al año un hogar colombiano su consumo masivo?",
           "unit": "canales",
           "min": 1,
-          "max": 20,
-          "answer": 9.4,
-          "reveal": "9,4 canales (MAT Jun-26), vs. 8,8 en Jun-23. No existe un canal perfecto: cada uno cumple un rol distinto.",
-          "hostNote": "Cierre (slide 39): la pregunta no es dónde compra el shopper, sino qué rol le da a cada canal. Después, podio final.",
-          "step": 0.1
+          "max": 25,
+          "step": 0.1,
+          "answer": 13.7,
+          "reveal": "13,7 canales al año, más que el promedio de Latam (11,2). El shopper colombiano es de los más omnicanales de la región: no existe un canal perfecto, cada uno cumple un rol distinto.",
+          "hostNote": "Cierre: la pregunta no es dónde compra el shopper, sino qué rol le da a cada canal. Después, podio final."
         }
       ]
     }

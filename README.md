@@ -14,7 +14,7 @@
 
 Un ciclo por pregunta = **2 o 3 pulsaciones**: abrir pregunta → (se cierra y revela sola) → ver ranking → siguiente. En la Introducción y en la Pregunta de Oro el Top 10 por pregunta está desactivado, así que se pasa directo a la siguiente (2 pulsaciones).
 
-**Estructura (prompt v2):** Introducción "¿Qué tanto conoces al shopper?" (10 preguntas, 20 s, x1) → 4 capítulos de canales (4 preguntas cada uno, 30 s; x1 · x1,25 · x1,5 · x2; la intro de cada capítulo muestra su % del gasto FMCG) → Pregunta de Oro (40 s, x3). En **📝 Preguntas** puedes cambiar por fase el tiempo, el multiplicador, el % del gasto y si se muestra el Top 10 después de cada pregunta.
+**Estructura (Excel de preguntas final del taller):** Introducción "¿Qué tanto conoces al shopper?" (9 preguntas, 20 s, x1) → 4 capítulos de canales (4 preguntas cada uno, 30 s; x1 · x1,25 · x1,5 · x2; la intro de cada capítulo muestra su % del gasto FMCG) → Pregunta de Oro (40 s, x3). En **📝 Preguntas** puedes cambiar por fase el tiempo, el multiplicador, el % del gasto y si se muestra el Top 10 después de cada pregunta.
 Para ensayar sin público: **+ 20 bots** y, después, **↺ Reiniciar partida** (todos vuelven a 1.000 puntos).
 
 **Plan gratuito:** si el servidor se reinicia, la base de datos se borra (las partidas son de un solo evento, así que en la práctica no afecta si no se reinicia durante el juego). Para un evento crítico, cambia el servicio a **Starter** (unos USD 7 al mes) y agrega un disco en `/var/data` con la variable `DB_FILE=/var/data/channel-challenge.db`: con eso los saldos sobreviven a cualquier reinicio.
